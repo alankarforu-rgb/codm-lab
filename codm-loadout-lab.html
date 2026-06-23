@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0A0C0F">
+<title>CODM Loadout Lab — I&L GAMES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0C0F;
+    --panel:#14181D;
+    --panel-2:#191F26;
+    --line: rgba(255,255,255,0.09);
+    --amber:#FF7A29;
+    --amber-dim: rgba(255,122,41,0.18);
+    --teal:#4FD1C5;
+    --teal-dim: rgba(79,209,197,0.16);
+    --text:#ECEAE4;
+    --muted:#8B92A0;
+    --danger:#E25C5C;
+    --radius:2px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(255,122,41,0.05), transparent 40%),
+      radial-gradient(circle at 85% 100%, rgba(79,209,197,0.05), transparent 40%);
+  }
+  .mono{font-family:'Share Tech Mono', monospace;}
+  .display{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:0.02em;}
+
+  :focus-visible{outline:2px solid var(--amber); outline-offset:2px;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:relative;
+    padding:18px 16px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .frame{position:relative;}
+  .frame::before, .frame::after{
+    content:'';
+    position:absolute;
+    width:10px;height:10px;
+    border-top:2px solid var(--amber);
+    border-left:2px solid var(--amber);
+    top:0; left:0;
+  }
+  .frame::after{
+    top:auto; left:auto; bottom:0; right:0;
+    border-top:none; border-left:none;
+    border-bottom:2px solid var(--amber);
+    border-right:2px solid var(--amber);
+  }
+  .hdr-row{display:flex; align-items:flex-start; justify-content:space-between; padding:10px 14px;}
+  .hdr-title{display:flex; flex-direction:column; gap:2px;}
+  .hdr-title .eyebrow{font-size:11px; color:var(--teal); letter-spacing:0.18em; text-transform:uppercase;}
+  .hdr-title h1{margin:0; font-size:clamp(20px,5vw,28px); line-height:1.05;}
+  .hdr-status{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--muted); white-space:nowrap;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--teal); box-shadow:0 0 6px var(--teal);}
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display:flex; gap:8px;
+    padding:14px 16px 0;
+    overflow-x:auto;
+  }
+  .tab{
+    flex:1;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--muted);
+    padding:10px 8px;
+    font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px;
+    letter-spacing:0.06em; text-transform:uppercase;
+    cursor:pointer;
+    position:relative;
+    white-space:nowrap;
+    transition:color .15s, border-color .15s;
+  }
+  .tab[aria-selected="true"]{
+    color:var(--amber);
+    border-color:var(--amber);
+    background:var(--amber-dim);
+  }
+
+  main{padding:18px 16px 60px; max-width:720px; margin:0 auto;}
+  .panel{display:none;}
+  .panel.active{display:block; animation:fade .25s ease;}
+  @media (prefers-reduced-motion: reduce){ .panel.active{animation:none;} }
+  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  h2.section-title{
+    font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.14em;
+    margin:0 0 10px; font-family:'Inter',sans-serif; font-weight:600;
+  }
+
+  /* ---------- Playstyle cards ---------- */
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .style-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:14px 12px;
+    cursor:pointer;
+    text-align:left;
+    color:var(--text);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .style-card svg{width:22px; height:22px; stroke:var(--muted); fill:none; stroke-width:1.6;}
+  .style-card .name{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.03em;}
+  .style-card .desc{font-size:11.5px; color:var(--muted); line-height:1.3;}
+  .style-card[aria-pressed="true"]{
+    border-color:var(--amber);
+    background:linear-gradient(180deg, var(--amber-dim), var(--panel));
+  }
+  .style-card[aria-pressed="true"] svg{stroke:var(--amber);}
+  .style-card[aria-pressed="true"] .name{color:var(--amber);}
+
+  fieldset{border:none; padding:0; margin:18px 0 0;}
+  legend{padding:0;}
+
+  .seg{display:flex; border:1px solid var(--line); overflow:hidden;}
+  .seg button{
+    flex:1; background:var(--panel); color:var(--muted); border:none;
+    padding:10px 6px; font-size:12.5px; font-family:'Inter',sans-serif; font-weight:500;
+    border-right:1px solid var(--line); cursor:pointer;
+  }
+  .seg button:last-child{border-right:none;}
+  .seg button[aria-pressed="true"]{background:var(--teal-dim); color:var(--teal);}
+
+  .toggle-row{display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding:12px; border:1px solid var(--line); background:var(--panel);}
+  .toggle-row .lbl{font-size:13.5px;}
+  .toggle-row .sub{font-size:11px; color:var(--muted); margin-top:2px;}
+  .switch{position:relative; width:42px; height:24px; background:#222831; border:1px solid var(--line); cursor:pointer; flex-shrink:0;}
+  .switch .knob{position:absolute; top:2px; left:2px; width:18px; height:18px; background:var(--muted); transition:left .15s, background .15s;}
+  .switch[aria-pressed="true"]{background:var(--teal-dim); border-color:var(--teal);}
+  .switch[aria-pressed="true"] .knob{left:22px; background:var(--teal);}
+
+  .primary-btn{
+    width:100%; margin-top:20px;
+    background:var(--amber); color:#1A0F06; border:none;
+    font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.05em; text-transform:uppercase;
+    padding:14px; cursor:pointer;
+  }
+  .primary-btn:active{filter:brightness(0.92);}
+  .ghost-btn{
+    background:transparent; border:1px solid var(--line); color:var(--text);
+    font-family:'Inter',sans-serif; font-weight:500; font-size:12.5px;
+    padding:9px 12px; cursor:pointer;
+  }
+  .ghost-btn.accent{border-color:var(--teal); color:var(--teal);}
+  .ghost-btn.danger{border-color:var(--danger); color:var(--danger);}
+
+  /* ---------- Dial ---------- */
+  .dial-wrap{display:flex; flex-direction:column; align-items:center; margin:28px 0 8px;}
+  .dial-label{font-size:11px; color:var(--muted); letter-spacing:0.16em; text-transform:uppercase; margin-top:8px;}
+  .dial-value{font-family:'Share Tech Mono',monospace; font-size:13px; color:var(--amber); margin-top:2px;}
+
+  /* ---------- Results / dog-tag card ---------- */
+  .tag-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:16px;
+    margin-top:18px;
+    position:relative;
+  }
+  .tag-card .tag-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
+  .tag-card .tag-head .name{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:16px;}
+  .tag-card .tag-head .meta{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em;}
+  .stat-row{display:grid; grid-template-columns:84px 1fr 46px; align-items:center; gap:10px; margin-bottom:9px;}
+  .stat-row .stat-label{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em;}
+  .bar-track{height:6px; background:#222831; position:relative; overflow:hidden;}
+  .bar-fill{height:100%; background:var(--teal);}
+  .stat-row .stat-val{font-family:'Share Tech Mono',monospace; font-size:13px; text-align:right;}
+  .tag-actions{display:flex; gap:8px; margin-top:14px;}
+  .tag-actions .ghost-btn{flex:1; text-align:center;}
+  .hint{font-size:11.5px; color:var(--muted); margin-top:10px; line-height:1.4;}
+
+  /* ---------- Form inputs (loadout) ---------- */
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px;}
+  .field input, .field textarea, .field select{
+    width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
+    padding:11px 10px; font-family:'Inter',sans-serif; font-size:14px;
+  }
+  .field textarea{resize:vertical; min-height:60px;}
+  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+
+  /* ---------- Saved list ---------- */
+  .empty-state{padding:30px 16px; text-align:center; border:1px dashed var(--line); color:var(--muted); font-size:13px;}
+  .save-card{background:var(--panel); border:1px solid var(--line); padding:14px; margin-bottom:12px;}
+  .save-card .save-head{display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
+  .save-card .save-name{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px;}
+  .save-card .save-sub{font-size:11px; color:var(--muted); margin-top:3px;}
+  .save-card .save-line{font-size:12.5px; color:var(--text); margin-top:8px; line-height:1.5;}
+  .save-card .save-line b{color:var(--muted); font-weight:500;}
+  .save-actions{display:flex; gap:8px; margin-top:10px;}
+
+  .toast{
+    position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+    background:#1B2027; border:1px solid var(--amber); color:var(--text);
+    padding:10px 16px; font-size:12.5px; z-index:50; opacity:0; pointer-events:none;
+    transition:opacity .2s;
+  }
+  .toast.show{opacity:1;}
+
+  footer{text-align:center; padding:20px 16px 40px; color:var(--muted); font-size:11px; letter-spacing:0.04em;}
+
+  @media (min-width:560px){
+    .grid-2{grid-template-columns:repeat(4,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<header class="frame">
+  <div class="hdr-row">
+    <div class="hdr-title">
+      <span class="eyebrow">I&amp;L GAMES // FIELD TOOL</span>
+      <h1 class="display">CODM Loadout Lab</h1>
+    </div>
+    <div class="hdr-status"><span class="dot"></span> v1.0 · local</div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button class="tab" role="tab" data-tab="sens" aria-selected="true">Sensitivity</button>
+  <button class="tab" role="tab" data-tab="load" aria-selected="false">Loadout</button>
+  <button class="tab" role="tab" data-tab="saved" aria-selected="false">Saved</button>
+</nav>
+
+<main>
+
+  <!-- ===================== SENSITIVITY PANEL ===================== -->
+  <section class="panel active" id="panel-sens" role="tabpanel">
+    <h2 class="section-title">01 — Designate Playstyle</h2>
+    <div class="grid-2" id="styleCards">
+      <button class="style-card" data-style="rusher" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="name">Rusher</span>
+        <span class="desc">Aggressive pushes, hip-fire, fast turns.</span>
+      </button>
+      <button class="style-card" data-style="sniper" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke-linecap="round"/></svg>
+        <span class="name">Sniper</span>
+        <span class="desc">Long angles, holding lanes, precision.</span>
+      </button>
+      <button class="style-card" data-style="balanced" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3z" stroke-linejoin="round"/></svg>
+        <span class="name">Balanced</span>
+        <span class="desc">Mid-range, adapts to any gunfight.</span>
+      </button>
+      <button class="style-card" data-style="cqb" aria-pressed="false">
+        <svg viewBox="0 0 24 24"><path d="M4 4l16 16M20 4 4 20" stroke-linecap="round"/><circle cx="12" cy="12" r="4"/></svg>
+        <span class="name">Close-Quarters</span>
+        <span class="desc">Tight maps, SMGs, point-blank duels.</span>
+      </button>
+    </div>
+
+    <fieldset>
+      <legend class="section-title">02 — Screen Size</legend>
+      <div class="seg" id="sizeSeg">
+        <button data-size="small" aria-pressed="false">Small (&lt;6.3")</button>
+        <button data-size="medium" aria-pressed="true">Medium</button>
+        <button data-size="large" aria-pressed="false">Large / Tablet</button>
+      </div>
+    </fieldset>
+
+    <div class="toggle-row">
+      <div>
+        <div class="lbl">Gyroscope</div>
+        <div class="sub">Adds a tilt-aim readout if you play with gyro on</div>
+      </div>
+      <button class="switch" id="gyroToggle" aria-pressed="false" aria-label="Toggle gyroscope"><span class="knob"></span></button>
+    </div>
+
+    <button class="primary-btn" id="generateBtn">Generate Profile</button>
+
+    <div id="dialWrap" class="dial-wrap" style="display:none;">
+      <svg width="140" height="140" viewBox="0 0 140 140">
+        <circle cx="70" cy="70" r="58" fill="none" stroke="#222831" stroke-width="10"/>
+        <circle id="dialArc" cx="70" cy="70" r="58" fill="none" stroke="#FF7A29" stroke-width="10" stroke-linecap="round" transform="rotate(-90 70 70)"/>
+        <text id="dialNum" x="70" y="76" text-anchor="middle" font-family="Share Tech Mono" font-size="26" fill="#ECEAE4">0</text>
+      </svg>
+      <div class="dial-label">Aggression Index</div>
+      <div class="dial-value" id="dialSub">—</div>
+    </div>
+
+    <div id="resultCard" class="tag-card" style="display:none;">
+      <div class="tag-head">
+        <span class="name" id="resultTitle">Profile</span>
+        <span class="meta" id="resultMeta">—</span>
+      </div>
+      <div id="statRows"></div>
+      <div class="hint">Baseline only — every thumb and device feels different. Play 2–3 matches, then nudge each value ±10 until aim feels natural.</div>
+      <div class="tag-actions">
+        <button class="ghost-btn accent" id="saveProfileBtn">Save Profile</button>
+        <button class="ghost-btn" id="copyProfileBtn">Copy as Text</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LOADOUT PANEL ===================== -->
+  <section class="panel" id="panel-load" role="tabpanel">
+    <h2 class="section-title">Build a Loadout Card</h2>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="weaponClass">Weapon Class</label>
+        <select id="weaponClass">
+          <option value="AR">Assault Rifle</option>
+          <option value="SMG">SMG</option>
+          <option value="LMG">LMG</option>
+          <option value="Sniper">Sniper / Marksman</option>
+          <option value="Shotgun">Shotgun</option>
+          <option value="Pistol">Pistol</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="weaponName">Weapon</label>
+        <input id="weaponName" list="weaponSuggestions" placeholder="e.g. AK-47">
+        <datalist id="weaponSuggestions"></datalist>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="optic">Optic</label>
+      <input id="optic" list="opticList" placeholder="e.g. Red Dot Sight">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="muzzle">Muzzle</label>
+        <input id="muzzle" list="muzzleList" placeholder="e.g. OWC Laser Tactical">
+      </div>
+      <div class="field">
+        <label for="barrel">Barrel</label>
+        <input id="barrel" list="barrelList" placeholder="e.g. MIP Light Barrel">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="underbarrel">Underbarrel</label>
+        <input id="underbarrel" list="underList" placeholder="e.g. YKM Combat Grip">
+      </div>
+      <div class="field">
+        <label for="stock">Stock</label>
+        <input id="stock" list="stockList" placeholder="e.g. YKM Combat Stock">
+      </div>
+    </div>
+    <div class="field">
+      <label for="perks">Perks</label>
+      <input id="perks" placeholder="e.g. Hardline, Skulker, Alert">
+    </div>
+    <div class="field">
+      <label for="loadoutNotes">Notes (when / how you use this)</label>
+      <textarea id="loadoutNotes" placeholder="e.g. Aggressive flank pushes on Crash, hip-fire close range"></textarea>
+    </div>
+    <div class="field">
+      <label for="loadoutName">Loadout Name</label>
+      <input id="loadoutName" placeholder="e.g. Crash Rush AK">
+    </div>
+
+    <datalist id="opticList"><option value="Red Dot Sight"><option value="Holographic Sight"><option value="VLK 3.0x Optic"><option value="Tactical Scope"></datalist>
+    <datalist id="muzzleList"><option value="OWC Laser Tactical"><option value="Monolithic Suppressor"><option value="OWC Light Tactical"></datalist>
+    <datalist id="barrelList"><option value="MIP Light Barrel"><option value="MIP Long Barrel"><option value="YKM Integral Suppressor"></datalist>
+    <datalist id="underList"><option value="YKM Combat Grip"><option value="OWC Tactical Foregrip"><option value="Strafe"></datalist>
+    <datalist id="stockList"><option value="YKM Combat Stock"><option value="No Stock"><option value="RTC Steady Stock"></datalist>
+
+    <button class="primary-btn" id="saveLoadoutBtn">Save Loadout</button>
+    <div class="hint">Attachment names are examples — gunsmith options shift every season, so type whatever's current and keep building real cards here.</div>
+  </section>
+
+  <!-- ===================== SAVED PANEL ===================== -->
+  <section class="panel" id="panel-saved" role="tabpanel">
+    <h2 class="section-title">Sensitivity Profiles</h2>
+    <div id="savedProfiles"></div>
+
+    <h2 class="section-title" style="margin-top:24px;">Loadout Cards</h2>
+    <div id="savedLoadouts"></div>
+
+    <button class="ghost-btn danger" id="clearAllBtn" style="width:100%; margin-top:18px;">Clear All Saved Data</button>
+  </section>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<footer>Built by I&amp;L GAMES · Data stays on this device</footer>
+
+<script>
+(function(){
+  const weaponSuggestionsByClass = {
+    AR: ["AK-47","M4","ASM10","Holger 26 (AR build)","Chopper","BK57"],
+    SMG: ["PDW-57","QQ9","RUS-79U","Cordite","HG 40","Fennec"],
+    LMG: ["Holger 26","UL736","S36","PKM"],
+    Sniper: ["DL Q33","Locus","Outlaw","XPR-50","Arctic .50","NA-45"],
+    Shotgun: ["HS0405","BY15","Echo"],
+    Pistol: ["J358",".50 GS","MW11"]
+  };
+
+  const state = {
+    activeTab: 'sens',
+    playstyle: null,
+    deviceSize: 'medium',
+    gyro: false,
+    profiles: [],
+    loadouts: [],
+    lastResult: null
+  };
+
+  /* ---------------- Tabs ---------------- */
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected', b===btn ? 'true':'false'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+      state.activeTab = btn.dataset.tab;
+    });
+  });
+
+  /* ---------------- Playstyle cards ---------------- */
+  document.querySelectorAll('.style-card').forEach(card=>{
+    card.addEventListener('click', ()=>{
+      document.querySelectorAll('.style-card').forEach(c=>c.setAttribute('aria-pressed', c===card ? 'true':'false'));
+      state.playstyle = card.dataset.style;
+    });
+  });
+
+  /* ---------------- Size segment ---------------- */
+  document.querySelectorAll('#sizeSeg button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('#sizeSeg button').forEach(b=>b.setAttribute('aria-pressed', b===btn?'true':'false'));
+      state.deviceSize = btn.dataset.size;
+    });
+  });
+
+  /* ---------------- Gyro toggle ---------------- */
+  const gyroToggle = document.getElementById('gyroToggle');
+  gyroToggle.addEventListener('click', ()=>{
+    state.gyro = gyroToggle.getAttribute('aria-pressed') !== 'true';
+    gyroToggle.setAttribute('aria-pressed', state.gyro ? 'true':'false');
+  });
+
+  /* ---------------- Calculation ---------------- */
+  const STYLE_BASE = {
+    rusher:   {camera:110, fire:110, reddot:100, x2:75, x34:55, sniper:35},
+    sniper:   {camera:85,  fire:90,  reddot:70,  x2:60, x34:45, sniper:32},
+    balanced: {camera:95,  fire:100, reddot:85,  x2:65, x34:50, sniper:35},
+    cqb:      {camera:120, fire:115, reddot:105, x2:80, x34:60, sniper:30}
+  };
+  const SIZE_MOD = {small:1.08, medium:1.0, large:0.92};
+  const STAT_MAX = {camera:160, fire:160, reddot:140, x2:110, x34:90, sniper:70, gyro:300};
+  const STAT_LABEL = {camera:'Camera / Free Look', fire:'Fire Button (ADS)', reddot:'Red Dot / Holo', x2:'2x Scope', x34:'3x–4x Scope', sniper:'Sniper Scope', gyro:'Gyroscope'};
+  const AGGRO_BASE = {rusher:88, cqb:82, balanced:50, sniper:18};
+
+  function calcProfile(playstyle, size, gyro){
+    const base = STYLE_BASE[playstyle];
+    const mod = SIZE_MOD[size];
+    const stats = {};
+    Object.keys(base).forEach(k=>{ stats[k] = Math.min(200, Math.max(1, Math.round(base[k]*mod))); });
+    if (gyro){
+      stats.gyro = Math.min(300, Math.round(stats.camera*2.2));
+      stats.camera = Math.round(stats.camera*0.9);
+      stats.fire = Math.round(stats.fire*0.9);
+    }
+    return stats;
+  }
+  function calcAggro(playstyle, size, gyro){
+    let v = AGGRO_BASE[playstyle];
+    if (size==='small') v += 5;
+    if (size==='large') v -= 5;
+    if (gyro) v += 4;
+    return Math.min(100, Math.max(0, Math.round(v)));
+  }
+
+  const STYLE_NAMES = {rusher:'Rusher', sniper:'Sniper', balanced:'Balanced', cqb:'Close-Quarters'};
+  const SIZE_NAMES = {small:'Small screen', medium:'Medium screen', large:'Large / Tablet'};
+
+  document.getElementById('generateBtn').addEventListener('click', ()=>{
+    if (!state.playstyle){
+      showToast('Pick a playstyle card first.');
+      return;
+    }
+    const stats = calcProfile(state.playstyle, state.deviceSize, state.gyro);
+    const aggro = calcAggro(state.playstyle, state.deviceSize, state.gyro);
+    state.lastResult = {stats, aggro, playstyle: state.playstyle, size: state.deviceSize, gyro: state.gyro};
+    renderDial(aggro);
+    renderResult(stats, aggro);
+  });
+
+  function renderDial(aggro){
+    const wrap = document.getElementById('dialWrap');
+    wrap.style.display = 'flex';
+    const circumference = 2*Math.PI*58;
+    const arc = document.getElementById('dialArc');
+    arc.setAttribute('stroke-dasharray', circumference);
+    arc.setAttribute('stroke-dashoffset', circumference - (aggro/100)*circumference);
+    document.getElementById('dialNum').textContent = aggro;
+    document.getElementById('dialSub').textContent =
+      aggro >= 75 ? 'Hyper-aggressive setup' :
+      aggro >= 45 ? 'Balanced setup' : 'Precision / hold setup';
+  }
+
+  function renderResult(stats, aggro){
+    const card = document.getElementById('resultCard');
+    card.style.display = 'block';
+    document.getElementById('resultTitle').textContent = STYLE_NAMES[state.playstyle] + ' Profile';
+    document.getElementById('resultMeta').textContent = SIZE_NAMES[state.deviceSize] + (state.gyro ? ' · Gyro On' : ' · Gyro Off');
+    const rows = document.getElementById('statRows');
+    rows.innerHTML = '';
+    Object.keys(stats).forEach(k=>{
+      const pct = Math.min(100, (stats[k]/STAT_MAX[k])*100);
+      const row = document.createElement('div');
+      row.className = 'stat-row';
+      row.innerHTML = '<span class="stat-label">'+STAT_LABEL[k]+'</span>'+
+        '<span class="bar-track"><span class="bar-fill" style="width:'+pct+'%"></span></span>'+
+        '<span class="stat-val mono">'+stats[k]+'</span>';
+      rows.appendChild(row);
+    });
+    card.scrollIntoView({behavior: prefersReduced() ? 'auto':'smooth', block:'center'});
+  }
+
+  function prefersReduced(){
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  /* ---------------- Save profile ---------------- */
+  document.getElementById('saveProfileBtn').addEventListener('click', async ()=>{
+    if (!state.lastResult){ showToast('Generate a profile first.'); return; }
+    const name = STYLE_NAMES[state.lastResult.playstyle] + ' · ' + SIZE_NAMES[state.lastResult.size];
+    const entry = Object.assign({id: 'p'+Date.now(), name, createdAt: new Date().toISOString()}, state.lastResult);
+    state.profiles.unshift(entry);
+    const ok = await persist('sensitivity_profiles', state.profiles);
+    if (ok){ showToast('Profile saved.'); renderSavedProfiles(); }
+    else { state.profiles.shift(); showToast('Could not save — try again.'); }
+  });
+
+  document.getElementById('copyProfileBtn').addEventListener('click', ()=>{
+    if (!state.lastResult) return;
+    copyText(profileToText(state.lastResult, STYLE_NAMES[state.lastResult.playstyle]+' Profile'));
+  });
+
+  function profileToText(result, title){
+    const lines = [
+      'CODM SENSITIVITY — ' + title,
+      'Playstyle: ' + STYLE_NAMES[result.playstyle] + ' | Screen: ' + SIZE_NAMES[result.size] + ' | Gyro: ' + (result.gyro?'On':'Off'),
+    ];
+    Object.keys(result.stats).forEach(k=> lines.push(STAT_LABEL[k] + ': ' + result.stats[k]));
+    lines.push('— via I&L GAMES Loadout Lab');
+    return lines.join('\n');
+  }
+
+  /* ---------------- Loadout panel ---------------- */
+  const weaponClassSel = document.getElementById('weaponClass');
+  function refreshWeaponSuggestions(){
+    const list = document.getElementById('weaponSuggestions');
+    list.innerHTML = '';
+    (weaponSuggestionsByClass[weaponClassSel.value]||[]).forEach(w=>{
+      const opt = document.createElement('option');
+      opt.value = w;
+      list.appendChild(opt);
+    });
+  }
+  weaponClassSel.addEventListener('change', refreshWeaponSuggestions);
+  refreshWeaponSuggestions();
+
+  document.getElementById('saveLoadoutBtn').addEventListener('click', async ()=>{
+    const name = val('loadoutName').trim();
+    const weaponName = val('weaponName').trim();
+    if (!name || !weaponName){ showToast('Add at least a weapon and a loadout name.'); return; }
+    const entry = {
+      id: 'l'+Date.now(),
+      name,
+      weaponClass: weaponClassSel.value,
+      weaponName,
+      optic: val('optic'), muzzle: val('muzzle'), barrel: val('barrel'),
+      underbarrel: val('underbarrel'), stock: val('stock'),
+      perks: val('perks'), notes: val('loadoutNotes'),
+      createdAt: new Date().toISOString()
+    };
+    state.loadouts.unshift(entry);
+    const ok = await persist('loadouts', state.loadouts);
+    if (ok){
+      showToast('Loadout saved.');
+      renderSavedLoadouts();
+      ['loadoutName','weaponName','optic','muzzle','barrel','underbarrel','stock','perks','loadoutNotes'].forEach(id=>document.getElementById(id).value='');
+    } else {
+      state.loadouts.shift();
+      showToast('Could not save — try again.');
+    }
+  });
+  function val(id){ return document.getElementById(id).value; }
+
+  function loadoutToText(l){
+    return [
+      'CODM LOADOUT — ' + l.name,
+      'Class: ' + l.weaponClass + ' | Weapon: ' + l.weaponName,
+      'Optic: ' + (l.optic||'—') + ' | Muzzle: ' + (l.muzzle||'—'),
+      'Barrel: ' + (l.barrel||'—') + ' | Underbarrel: ' + (l.underbarrel||'—') + ' | Stock: ' + (l.stock||'—'),
+      'Perks: ' + (l.perks||'—'),
+      l.notes ? ('Notes: ' + l.notes) : null,
+      '— via I&L GAMES Loadout Lab'
+    ].filter(Boolean).join('\n');
+  }
+
+  /* ---------------- Saved panel rendering ---------------- */
+  function renderSavedProfiles(){
+    const wrap = document.getElementById('savedProfiles');
+    if (!state.profiles.length){
+      wrap.innerHTML = '<div class="empty-state">No profiles locked in yet. Generate one in the Sensitivity tab and hit Save.</div>';
+      return;
+    }
+    wrap.innerHTML = '';
+    state.profiles.forEach(p=>{
+      const div = document.createElement('div');
+      div.className = 'save-card';
+      const statLine = Object.keys(p.stats).map(k=> esc(STAT_LABEL[k])+': '+p.stats[k]).join(' · ');
+      div.innerHTML =
+        '<div class="save-head"><span class="save-name">'+esc(p.name)+'</span></div>'+
+        '<div class="save-sub">'+ (p.gyro?'Gyro On':'Gyro Off') +'</div>'+
+        '<div class="save-line">'+statLine+'</div>'+
+        '<div class="save-actions">'+
+          '<button class="ghost-btn copy-p">Copy</button>'+
+          '<button class="ghost-btn danger del-p">Delete</button>'+
+        '</div>';
+      div.querySelector('.copy-p').addEventListener('click', ()=> copyText(profileToText(p, p.name)));
+      div.querySelector('.del-p').addEventListener('click', async ()=>{
+        const idx = state.profiles.indexOf(p);
+        state.profiles.splice(idx,1);
+        const ok = await persist('sensitivity_profiles', state.profiles);
+        if (ok) { renderSavedProfiles(); showToast('Deleted.'); }
+        else { state.profiles.splice(idx,0,p); showToast('Could not delete — try again.'); }
+      });
+      wrap.appendChild(div);
+    });
+  }
+
+  function renderSavedLoadouts(){
+    const wrap = document.getElementById('savedLoadouts');
+    if (!state.loadouts.length){
+      wrap.innerHTML = '<div class="empty-state">No loadout cards yet. Build one in the Loadout tab.</div>';
+      return;
+    }
+    wrap.innerHTML = '';
+    state.loadouts.forEach(l=>{
+      const div = document.createElement('div');
+      div.className = 'save-card';
+      div.innerHTML =
+        '<div class="save-head"><span class="save-name">'+esc(l.name)+'</span><span class="save-sub">'+esc(l.weaponClass)+'</span></div>'+
+        '<div class="save-sub">'+esc(l.weaponName)+'</div>'+
+        '<div class="save-line"><b>Optic</b> '+esc(l.optic||'—')+' · <b>Muzzle</b> '+esc(l.muzzle||'—')+'<br><b>Barrel</b> '+esc(l.barrel||'—')+' · <b>Under</b> '+esc(l.underbarrel||'—')+' · <b>Stock</b> '+esc(l.stock||'—')+'<br><b>Perks</b> '+esc(l.perks||'—')+(l.notes? ('<br><b>Notes</b> '+esc(l.notes)) : '')+'</div>'+
+        '<div class="save-actions">'+
+          '<button class="ghost-btn copy-l">Copy</button>'+
+          '<button class="ghost-btn danger del-l">Delete</button>'+
+        '</div>';
+      div.querySelector('.copy-l').addEventListener('click', ()=> copyText(loadoutToText(l)));
+      div.querySelector('.del-l').addEventListener('click', async ()=>{
+        const idx = state.loadouts.indexOf(l);
+        state.loadouts.splice(idx,1);
+        const ok = await persist('loadouts', state.loadouts);
+        if (ok) { renderSavedLoadouts(); showToast('Deleted.'); }
+        else { state.loadouts.splice(idx,0,l); showToast('Could not delete — try again.'); }
+      });
+      wrap.appendChild(div);
+    });
+  }
+
+  document.getElementById('clearAllBtn').addEventListener('click', async ()=>{
+    state.profiles = [];
+    state.loadouts = [];
+    await persist('sensitivity_profiles', []);
+    await persist('loadouts', []);
+    renderSavedProfiles();
+    renderSavedLoadouts();
+    showToast('All saved data cleared.');
+  });
+
+  /* ---------------- Storage helpers ---------------- */
+  async function persist(key, arr){
+    try{
+      const res = await window.storage.set(key, JSON.stringify(arr), false);
+      return !!res;
+    }catch(e){ console.error('storage set failed', e); return false; }
+  }
+  async function loadKey(key){
+    try{
+      const res = await window.storage.get(key, false);
+      if (!res || !res.value) return [];
+      return JSON.parse(res.value);
+    }catch(e){ return []; }
+  }
+  async function init(){
+    state.profiles = await loadKey('sensitivity_profiles');
+    state.loadouts = await loadKey('loadouts');
+    renderSavedProfiles();
+    renderSavedLoadouts();
+  }
+  init();
+
+  /* ---------------- Utilities ---------------- */
+  function esc(str){
+    return String(str==null?'':str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function copyText(text){
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard.')).catch(()=>fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
+  }
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand('copy'); showToast('Copied to clipboard.'); }
+    catch(e){ showToast('Copy failed — select and copy manually.'); }
+    document.body.removeChild(ta);
+  }
+  let toastTimer;
+  function showToast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> t.classList.remove('show'), 2200);
+  }
+})();
+</script>
+</body>
+</html>
