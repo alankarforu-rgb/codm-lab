@@ -1,800 +1,1022 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+<html lang="en"><head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0A0C0F">
-<title>CODM Loadout Lab — I&L GAMES</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I&amp;L GAMES - CODM Sensitivity Helper</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-  :root{
-    --bg:#0A0C0F;
-    --panel:#14181D;
-    --panel-2:#191F26;
-    --line: rgba(255,255,255,0.09);
-    --amber:#FF7A29;
-    --amber-dim: rgba(255,122,41,0.18);
-    --teal:#4FD1C5;
-    --teal-dim: rgba(79,209,197,0.16);
-    --text:#ECEAE4;
-    --muted:#8B92A0;
-    --danger:#E25C5C;
-    --radius:2px;
+  :root {
+    --primary: #38bdf8;
+    --primary-dark: #0ea5e9;
+    --bg: #0f172a;
+    --bg-card: #1e293b;
+    --bg-input: #334155;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Inter',system-ui,sans-serif;
-    min-height:100vh;
-    -webkit-font-smoothing:antialiased;
-    background-image:
-      radial-gradient(circle at 15% 0%, rgba(255,122,41,0.05), transparent 40%),
-      radial-gradient(circle at 85% 100%, rgba(79,209,197,0.05), transparent 40%);
+  
+  * { 
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
-  .mono{font-family:'Share Tech Mono', monospace;}
-  .display{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:0.02em;}
-
-  :focus-visible{outline:2px solid var(--amber); outline-offset:2px;}
-
-  /* ---------- Header ---------- */
-  header{
-    position:relative;
-    padding:18px 16px 14px;
-    border-bottom:1px solid var(--line);
+  
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
   }
-  .frame{position:relative;}
-  .frame::before, .frame::after{
-    content:'';
-    position:absolute;
-    width:10px;height:10px;
-    border-top:2px solid var(--amber);
-    border-left:2px solid var(--amber);
-    top:0; left:0;
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-  .frame::after{
-    top:auto; left:auto; bottom:0; right:0;
-    border-top:none; border-left:none;
-    border-bottom:2px solid var(--amber);
-    border-right:2px solid var(--amber);
+  
+  .card {
+    background: var(--bg-card);
+    border: 1px solid rgba(56, 189, 248, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
   }
-  .hdr-row{display:flex; align-items:flex-start; justify-content:space-between; padding:10px 14px;}
-  .hdr-title{display:flex; flex-direction:column; gap:2px;}
-  .hdr-title .eyebrow{font-size:11px; color:var(--teal); letter-spacing:0.18em; text-transform:uppercase;}
-  .hdr-title h1{margin:0; font-size:clamp(20px,5vw,28px); line-height:1.05;}
-  .hdr-status{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--muted); white-space:nowrap;}
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--teal); box-shadow:0 0 6px var(--teal);}
-
-  /* ---------- Tabs ---------- */
-  .tabs{
-    display:flex; gap:8px;
-    padding:14px 16px 0;
-    overflow-x:auto;
+  
+  .card:hover {
+    border-color: rgba(56, 189, 248, 0.3);
+    box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.1);
   }
-  .tab{
-    flex:1;
-    background:var(--panel);
-    border:1px solid var(--line);
-    color:var(--muted);
-    padding:10px 8px;
-    font-family:'Rajdhani',sans-serif; font-weight:700; font-size:13px;
-    letter-spacing:0.06em; text-transform:uppercase;
-    cursor:pointer;
-    position:relative;
-    white-space:nowrap;
-    transition:color .15s, border-color .15s;
+  
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: var(--bg-input);
+    border-radius: 9999px;
+    outline: none;
   }
-  .tab[aria-selected="true"]{
-    color:var(--amber);
-    border-color:var(--amber);
-    background:var(--amber-dim);
+  
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--primary);
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
   }
-
-  main{padding:18px 16px 60px; max-width:720px; margin:0 auto;}
-  .panel{display:none;}
-  .panel.active{display:block; animation:fade .25s ease;}
-  @media (prefers-reduced-motion: reduce){ .panel.active{animation:none;} }
-  @keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
-
-  h2.section-title{
-    font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.14em;
-    margin:0 0 10px; font-family:'Inter',sans-serif; font-weight:600;
+  
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--primary-dark);
+    box-shadow: 0 0 0 6px rgba(56, 189, 248, 0.3);
   }
-
-  /* ---------- Playstyle cards ---------- */
-  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-  .style-card{
-    background:var(--panel);
-    border:1px solid var(--line);
-    padding:14px 12px;
-    cursor:pointer;
-    text-align:left;
-    color:var(--text);
-    display:flex; flex-direction:column; gap:8px;
+  
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--primary);
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
   }
-  .style-card svg{width:22px; height:22px; stroke:var(--muted); fill:none; stroke-width:1.6;}
-  .style-card .name{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.03em;}
-  .style-card .desc{font-size:11.5px; color:var(--muted); line-height:1.3;}
-  .style-card[aria-pressed="true"]{
-    border-color:var(--amber);
-    background:linear-gradient(180deg, var(--amber-dim), var(--panel));
+  
+  input[type="number"], select {
+    background: var(--bg-input);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    color: var(--text);
+    transition: all 0.2s ease;
   }
-  .style-card[aria-pressed="true"] svg{stroke:var(--amber);}
-  .style-card[aria-pressed="true"] .name{color:var(--amber);}
-
-  fieldset{border:none; padding:0; margin:18px 0 0;}
-  legend{padding:0;}
-
-  .seg{display:flex; border:1px solid var(--line); overflow:hidden;}
-  .seg button{
-    flex:1; background:var(--panel); color:var(--muted); border:none;
-    padding:10px 6px; font-size:12.5px; font-family:'Inter',sans-serif; font-weight:500;
-    border-right:1px solid var(--line); cursor:pointer;
+  
+  input[type="number"]:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
   }
-  .seg button:last-child{border-right:none;}
-  .seg button[aria-pressed="true"]{background:var(--teal-dim); color:var(--teal);}
-
-  .toggle-row{display:flex; align-items:center; justify-content:space-between; margin-top:16px; padding:12px; border:1px solid var(--line); background:var(--panel);}
-  .toggle-row .lbl{font-size:13.5px;}
-  .toggle-row .sub{font-size:11px; color:var(--muted); margin-top:2px;}
-  .switch{position:relative; width:42px; height:24px; background:#222831; border:1px solid var(--line); cursor:pointer; flex-shrink:0;}
-  .switch .knob{position:absolute; top:2px; left:2px; width:18px; height:18px; background:var(--muted); transition:left .15s, background .15s;}
-  .switch[aria-pressed="true"]{background:var(--teal-dim); border-color:var(--teal);}
-  .switch[aria-pressed="true"] .knob{left:22px; background:var(--teal);}
-
-  .primary-btn{
-    width:100%; margin-top:20px;
-    background:var(--amber); color:#1A0F06; border:none;
-    font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px; letter-spacing:0.05em; text-transform:uppercase;
-    padding:14px; cursor:pointer;
+  
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(56, 189, 248, 0.3);
   }
-  .primary-btn:active{filter:brightness(0.92);}
-  .ghost-btn{
-    background:transparent; border:1px solid var(--line); color:var(--text);
-    font-family:'Inter',sans-serif; font-weight:500; font-size:12.5px;
-    padding:9px 12px; cursor:pointer;
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(56, 189, 248, 0.4);
   }
-  .ghost-btn.accent{border-color:var(--teal); color:var(--teal);}
-  .ghost-btn.danger{border-color:var(--danger); color:var(--danger);}
-
-  /* ---------- Dial ---------- */
-  .dial-wrap{display:flex; flex-direction:column; align-items:center; margin:28px 0 8px;}
-  .dial-label{font-size:11px; color:var(--muted); letter-spacing:0.16em; text-transform:uppercase; margin-top:8px;}
-  .dial-value{font-family:'Share Tech Mono',monospace; font-size:13px; color:var(--amber); margin-top:2px;}
-
-  /* ---------- Results / dog-tag card ---------- */
-  .tag-card{
-    background:var(--panel);
-    border:1px solid var(--line);
-    padding:16px;
-    margin-top:18px;
-    position:relative;
+  
+  .btn-secondary {
+    background: var(--bg-input);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    transition: all 0.2s ease;
   }
-  .tag-card .tag-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;}
-  .tag-card .tag-head .name{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:16px;}
-  .tag-card .tag-head .meta{font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em;}
-  .stat-row{display:grid; grid-template-columns:84px 1fr 46px; align-items:center; gap:10px; margin-bottom:9px;}
-  .stat-row .stat-label{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em;}
-  .bar-track{height:6px; background:#222831; position:relative; overflow:hidden;}
-  .bar-fill{height:100%; background:var(--teal);}
-  .stat-row .stat-val{font-family:'Share Tech Mono',monospace; font-size:13px; text-align:right;}
-  .tag-actions{display:flex; gap:8px; margin-top:14px;}
-  .tag-actions .ghost-btn{flex:1; text-align:center;}
-  .hint{font-size:11.5px; color:var(--muted); margin-top:10px; line-height:1.4;}
-
-  /* ---------- Form inputs (loadout) ---------- */
-  .field{margin-bottom:14px;}
-  .field label{display:block; font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px;}
-  .field input, .field textarea, .field select{
-    width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
-    padding:11px 10px; font-family:'Inter',sans-serif; font-size:14px;
+  
+  .btn-secondary:hover {
+    background: var(--bg-card);
+    border-color: var(--primary);
   }
-  .field textarea{resize:vertical; min-height:60px;}
-  .field-row{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
-
-  /* ---------- Saved list ---------- */
-  .empty-state{padding:30px 16px; text-align:center; border:1px dashed var(--line); color:var(--muted); font-size:13px;}
-  .save-card{background:var(--panel); border:1px solid var(--line); padding:14px; margin-bottom:12px;}
-  .save-card .save-head{display:flex; justify-content:space-between; align-items:baseline; gap:8px;}
-  .save-card .save-name{font-family:'Rajdhani',sans-serif; font-weight:700; font-size:15px;}
-  .save-card .save-sub{font-size:11px; color:var(--muted); margin-top:3px;}
-  .save-card .save-line{font-size:12.5px; color:var(--text); margin-top:8px; line-height:1.5;}
-  .save-card .save-line b{color:var(--muted); font-weight:500;}
-  .save-actions{display:flex; gap:8px; margin-top:10px;}
-
-  .toast{
-    position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
-    background:#1B2027; border:1px solid var(--amber); color:var(--text);
-    padding:10px 16px; font-size:12.5px; z-index:50; opacity:0; pointer-events:none;
-    transition:opacity .2s;
+  
+  .tab-active {
+    background: var(--primary);
+    color: #0f172a;
+    font-weight: 600;
   }
-  .toast.show{opacity:1;}
-
-  footer{text-align:center; padding:20px 16px 40px; color:var(--muted); font-size:11px; letter-spacing:0.04em;}
-
-  @media (min-width:560px){
-    .grid-2{grid-template-columns:repeat(4,1fr);}
+  
+  .accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+  }
+  
+  .accordion-active .accordion-content {
+    max-height: 2000px;
+    transition: max-height 0.5s ease-in;
+  }
+  
+  .accordion-active .accordion-icon {
+    transform: rotate(180deg);
+  }
+  
+  .toast {
+    animation: slideIn 0.3s ease-out, fadeOut 0.5s ease-in 2.5s forwards;
+  }
+  
+  @keyframes slideIn {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+  }
+  
+  .seagm-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow {
+    from { box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+    to { box-shadow: 0 0 20px rgba(56, 189, 248, 0.8), 0 0 30px rgba(56, 189, 248, 0.6); }
+  }
+  
+  @media (max-width: 390px) {
+    .text-responsive { font-size: 0.875rem; }
+    .grid-responsive { grid-template-columns: 1fr; }
   }
 </style>
-</head>
-<body>
-
-<header class="frame">
-  <div class="hdr-row">
-    <div class="hdr-title">
-      <span class="eyebrow">I&amp;L GAMES // FIELD TOOL</span>
-      <h1 class="display">CODM Loadout Lab</h1>
-    </div>
-    <div class="hdr-status"><span class="dot"></span> v1.0 · local</div>
-  </div>
-</header>
-
-<nav class="tabs" role="tablist" aria-label="Sections">
-  <button class="tab" role="tab" data-tab="sens" aria-selected="true">Sensitivity</button>
-  <button class="tab" role="tab" data-tab="load" aria-selected="false">Loadout</button>
-  <button class="tab" role="tab" data-tab="topup" aria-selected="false">Top-Up</button>
-  <button class="tab" role="tab" data-tab="saved" aria-selected="false">Saved</button>
-</nav>
-
-<main>
-
-  <!-- ===================== SENSITIVITY PANEL ===================== -->
-  <section class="panel active" id="panel-sens" role="tabpanel">
-    <h2 class="section-title">01 — Designate Playstyle</h2>
-    <div class="grid-2" id="styleCards">
-      <button class="style-card" data-style="rusher" aria-pressed="false">
-        <svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span class="name">Rusher</span>
-        <span class="desc">Aggressive pushes, hip-fire, fast turns.</span>
-      </button>
-      <button class="style-card" data-style="sniper" aria-pressed="false">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke-linecap="round"/></svg>
-        <span class="name">Sniper</span>
-        <span class="desc">Long angles, holding lanes, precision.</span>
-      </button>
-      <button class="style-card" data-style="balanced" aria-pressed="false">
-        <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.5 8.5 8 11 4.5-2.5 8-6 8-11V5l-8-3z" stroke-linejoin="round"/></svg>
-        <span class="name">Balanced</span>
-        <span class="desc">Mid-range, adapts to any gunfight.</span>
-      </button>
-      <button class="style-card" data-style="cqb" aria-pressed="false">
-        <svg viewBox="0 0 24 24"><path d="M4 4l16 16M20 4 4 20" stroke-linecap="round"/><circle cx="12" cy="12" r="4"/></svg>
-        <span class="name">Close-Quarters</span>
-        <span class="desc">Tight maps, SMGs, point-blank duels.</span>
-      </button>
-    </div>
-
-    <fieldset>
-      <legend class="section-title">02 — Screen Size</legend>
-      <div class="seg" id="sizeSeg">
-        <button data-size="small" aria-pressed="false">Small (&lt;6.3")</button>
-        <button data-size="medium" aria-pressed="true">Medium</button>
-        <button data-size="large" aria-pressed="false">Large / Tablet</button>
-      </div>
-    </fieldset>
-
-    <div class="toggle-row">
-      <div>
-        <div class="lbl">Gyroscope</div>
-        <div class="sub">Adds a tilt-aim readout if you play with gyro on</div>
-      </div>
-      <button class="switch" id="gyroToggle" aria-pressed="false" aria-label="Toggle gyroscope"><span class="knob"></span></button>
-    </div>
-
-    <button class="primary-btn" id="generateBtn">Generate Profile</button>
-
-    <div id="dialWrap" class="dial-wrap" style="display:none;">
-      <svg width="140" height="140" viewBox="0 0 140 140">
-        <circle cx="70" cy="70" r="58" fill="none" stroke="#222831" stroke-width="10"/>
-        <circle id="dialArc" cx="70" cy="70" r="58" fill="none" stroke="#FF7A29" stroke-width="10" stroke-linecap="round" transform="rotate(-90 70 70)"/>
-        <text id="dialNum" x="70" y="76" text-anchor="middle" font-family="Share Tech Mono" font-size="26" fill="#ECEAE4">0</text>
-      </svg>
-      <div class="dial-label">Aggression Index</div>
-      <div class="dial-value" id="dialSub">—</div>
-    </div>
-
-    <div id="resultCard" class="tag-card" style="display:none;">
-      <div class="tag-head">
-        <span class="name" id="resultTitle">Profile</span>
-        <span class="meta" id="resultMeta">—</span>
-      </div>
-      <div id="statRows"></div>
-      <div class="hint">Baseline only — every thumb and device feels different. Play 2–3 matches, then nudge each value ±10 until aim feels natural.</div>
-      <div class="tag-actions">
-        <button class="ghost-btn accent" id="saveProfileBtn">Save Profile</button>
-        <button class="ghost-btn" id="copyProfileBtn">Copy as Text</button>
+<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.sticky{position:sticky}.bottom-0{bottom:0px}.bottom-20{bottom:5rem}.left-0{left:0px}.right-0{right:0px}.right-4{right:1rem}.top-0{top:0px}.z-30{z-index:30}.z-40{z-index:40}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.my-6{margin-top:1.5rem;margin-bottom:1.5rem}.mb-2{margin-bottom:0.5rem}.mb-4{margin-bottom:1rem}.mb-6{margin-bottom:1.5rem}.mr-1{margin-right:0.25rem}.mr-2{margin-right:0.5rem}.mt-3{margin-top:0.75rem}.flex{display:flex}.grid{display:grid}.hidden{display:none}.h-10{height:2.5rem}.h-14{height:3.5rem}.w-10{width:2.5rem}.w-full{width:100%}.max-w-7xl{max-width:80rem}.flex-1{flex:1 1 0%}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-4{gap:1rem}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.whitespace-nowrap{white-space:nowrap}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-xl{border-radius:0.75rem}.border-2{border-width:2px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-sky-500\/20{border-color:rgb(14 165 233 / 0.2)}.border-sky-500\/50{border-color:rgb(14 165 233 / 0.5)}.bg-sky-500\/20{background-color:rgb(14 165 233 / 0.2)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/80{background-color:rgb(15 23 42 / 0.8)}.bg-gradient-to-br{background-image:linear-gradient(to bottom right, var(--tw-gradient-stops))}.from-sky-400{--tw-gradient-from:#38bdf8 var(--tw-gradient-from-position);--tw-gradient-to:rgb(56 189 248 / 0) var(--tw-gradient-to-position);--tw-gradient-stops:var(--tw-gradient-from), var(--tw-gradient-to)}.to-indigo-500{--tw-gradient-to:#6366f1 var(--tw-gradient-to-position)}.p-2{padding:0.5rem}.p-4{padding:1rem}.p-6{padding:1.5rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-4{padding-left:1rem;padding-right:1rem}.px-6{padding-left:1.5rem;padding-right:1.5rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.pb-20{padding-bottom:5rem}.pb-6{padding-bottom:1.5rem}.pt-2{padding-top:0.5rem}.text-left{text-align:left}.text-center{text-align:center}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xl{font-size:1.25rem;line-height:1.75rem}.text-xs{font-size:0.75rem;line-height:1rem}.font-bold{font-weight:700}.font-semibold{font-weight:600}.font-medium{font-weight:500}.text-green-400{--tw-text-opacity:1;color:rgb(74 222 128 / var(--tw-text-opacity, 1))}.text-indigo-400{--tw-text-opacity:1;color:rgb(129 140 248 / var(--tw-text-opacity, 1))}.text-orange-400{--tw-text-opacity:1;color:rgb(251 146 60 / var(--tw-text-opacity, 1))}.text-purple-400{--tw-text-opacity:1;color:rgb(192 132 252 / var(--tw-text-opacity, 1))}.text-red-400{--tw-text-opacity:1;color:rgb(248 113 113 / var(--tw-text-opacity, 1))}.text-sky-400{--tw-text-opacity:1;color:rgb(56 189 248 / var(--tw-text-opacity, 1))}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.backdrop-blur-lg{--tw-backdrop-blur:blur(16px);-webkit-backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);backdrop-filter:var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia)}.transition-all{transition-property:all;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-300{transition-duration:300ms}.hover\:bg-slate-700:hover{--tw-bg-opacity:1;background-color:rgb(51 65 85 / var(--tw-bg-opacity, 1))}@media (min-width: 640px){.sm\:inline{display:inline}.sm\:grid-cols-3{grid-template-columns:repeat(3, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:justify-start{justify-content:flex-start}.sm\:p-6{padding:1.5rem}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}.sm\:text-left{text-align:left}.sm\:text-2xl{font-size:1.5rem;line-height:2rem}.sm\:text-base{font-size:1rem;line-height:1.5rem}}@media (min-width: 1024px){.lg\:px-8{padding-left:2rem;padding-right:2rem}}</style></head>
+<body class="pb-20">
+  <!-- Header -->
+  <header class="sticky top-0 z-40 backdrop-blur-lg bg-slate-900/80 border-b border-sky-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-sky-400 to-indigo-500 flex items-center justify-center">
+            <i class="fa-solid fa-crosshairs text-white text-xl"></i>
+          </div>
+          <div>
+            <h1 class="text-xl sm:text-2xl font-bold gradient-text">I&amp;L GAMES</h1>
+            <p class="text-xs text-slate-400">CODM Sensitivity Helper</p>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button id="copyAllBtn" class="btn-primary px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-copy"></i>
+            <span class="hidden sm:inline">Copy All</span>
+          </button>
+        </div>
       </div>
     </div>
-  </section>
+  </header>
 
-  <!-- ===================== LOADOUT PANEL ===================== -->
-  <section class="panel" id="panel-load" role="tabpanel">
-    <h2 class="section-title">Build a Loadout Card</h2>
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
+    <!-- Mode Tabs -->
+    <div class="card rounded-2xl p-2 mb-6">
+      <div class="grid grid-cols-2 gap-2">
+        <button id="mpTab" class="tab-active py-3 rounded-xl text-sm sm:text-base transition-all">
+          <i class="fa-solid fa-gun mr-2"></i>MP MODE
+        </button>
+        <button id="brTab" class="py-3 rounded-xl text-sm sm:text-base text-slate-300 transition-all hover:bg-slate-700">
+          <i class="fa-solid fa-parachute-box mr-2"></i>BR MODE
+        </button>
+      </div>
+    </div>
 
-    <div class="field-row">
-      <div class="field">
-        <label for="weaponClass">Weapon Class</label>
-        <select id="weaponClass">
+    <!-- Weapon Auto-Fill -->
+    <div class="card rounded-2xl p-4 sm:p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-sky-400"></i>
+          Weapon Auto-Fill
+        </h2>
+        <span class="text-xs px-2 py-1 rounded-full bg-sky-500/20 text-sky-400">PRO</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <select id="weaponClass" class="px-4 py-3 rounded-lg text-sm">
+          <option value="">Select Class</option>
           <option value="AR">Assault Rifle</option>
           <option value="SMG">SMG</option>
+          <option value="Sniper">Sniper</option>
           <option value="LMG">LMG</option>
-          <option value="Sniper">Sniper / Marksman</option>
           <option value="Shotgun">Shotgun</option>
-          <option value="Pistol">Pistol</option>
+          <option value="Marksman">Marksman</option>
         </select>
+        <select id="weaponName" class="px-4 py-3 rounded-lg text-sm">
+          <option value="">Select Weapon</option>
+        </select>
+        <button id="autoFillBtn" class="btn-primary px-4 py-3 rounded-lg text-sm font-semibold">
+          <i class="fa-solid fa-bolt mr-2"></i>Apply Preset
+        </button>
       </div>
-      <div class="field">
-        <label for="weaponName">Weapon</label>
-        <input id="weaponName" list="weaponSuggestions" placeholder="e.g. AK-47">
-        <datalist id="weaponSuggestions"></datalist>
-      </div>
+      <p class="text-xs text-slate-400 mt-3"><i class="fa-solid fa-info-circle mr-1"></i>Applies optimized base settings. Fine-tune after testing.</p>
     </div>
 
-    <button class="ghost-btn accent" id="autofillBtn" style="width:100%; margin-bottom:14px;">⚡ Auto-fill Suggested Attachments</button>
-    <div class="hint" style="margin-top:-8px; margin-bottom:14px;">Fills a starting-point loadout for this weapon class — edit any field below to match your own gunsmith.</div>
-
-    <div class="field">
-      <label for="optic">Optic</label>
-      <input id="optic" list="opticList" placeholder="e.g. Red Dot Sight">
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label for="muzzle">Muzzle</label>
-        <input id="muzzle" list="muzzleList" placeholder="e.g. OWC Laser Tactical">
-      </div>
-      <div class="field">
-        <label for="barrel">Barrel</label>
-        <input id="barrel" list="barrelList" placeholder="e.g. MIP Light Barrel">
-      </div>
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label for="underbarrel">Underbarrel</label>
-        <input id="underbarrel" list="underList" placeholder="e.g. YKM Combat Grip">
-      </div>
-      <div class="field">
-        <label for="stock">Stock</label>
-        <input id="stock" list="stockList" placeholder="e.g. YKM Combat Stock">
+    <!-- MP MODE Content -->
+    <div id="mpContent" class="space-y-4">
+      
+      <!-- 1. Main Sensitivity -->
+      <div class="card rounded-2xl p-4 sm:p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-sky-400"></i>
+          Main Sensitivity
+        </h3>
+        <div class="space-y-4">
+          <div class="sensitivity-row" data-key="HORIZONTAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">HORIZONTAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="HORIZONTAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="HORIZONTAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
       </div>
     </div>
-    <div class="field">
-      <label for="perks">Perks</label>
-      <input id="perks" placeholder="e.g. Hardline, Skulker, Alert">
-    </div>
-    <div class="field">
-      <label for="loadoutNotes">Notes (when / how you use this)</label>
-      <textarea id="loadoutNotes" placeholder="e.g. Aggressive flank pushes on Crash, hip-fire close range"></textarea>
-    </div>
-    <div class="field">
-      <label for="loadoutName">Loadout Name</label>
-      <input id="loadoutName" placeholder="e.g. Crash Rush AK">
-    </div>
-
-    <datalist id="opticList"><option value="Red Dot Sight"><option value="Holographic Sight"><option value="VLK 3.0x Optic"><option value="Tactical Scope"></datalist>
-    <datalist id="muzzleList"><option value="OWC Laser Tactical"><option value="Monolithic Suppressor"><option value="OWC Light Tactical"></datalist>
-    <datalist id="barrelList"><option value="MIP Light Barrel"><option value="MIP Long Barrel"><option value="YKM Integral Suppressor"></datalist>
-    <datalist id="underList"><option value="YKM Combat Grip"><option value="OWC Tactical Foregrip"><option value="Strafe"></datalist>
-    <datalist id="stockList"><option value="YKM Combat Stock"><option value="No Stock"><option value="RTC Steady Stock"></datalist>
-
-    <button class="primary-btn" id="saveLoadoutBtn">Save Loadout</button>
-    <div class="hint">Attachment names are examples — gunsmith options shift every season, so type whatever's current and keep building real cards here.</div>
-  </section>
-
-  <!-- ===================== TOP-UP PANEL ===================== -->
-  <section class="panel" id="panel-topup" role="tabpanel">
-    <h2 class="section-title">CP / UC Top-Up</h2>
-    <div class="hint" style="margin-top:0; margin-bottom:16px;">Third-party resellers often price COD Points lower than the in-game store thanks to regional pricing. Compare before you buy.</div>
-
-    <div class="tag-card">
-      <div class="tag-head">
-        <span class="name">SEAGM</span>
-        <span class="meta">Top-Up</span>
+          <div class="sensitivity-row" data-key="VERTICAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">VERTICAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="VERTICAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="VERTICAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
       </div>
-      <div class="hint" style="margin-top:0;">Wide game catalog, instant delivery on most CP packages, frequent discount codes.</div>
-      <a class="primary-btn" style="display:block; text-align:center; text-decoration:none;" href="https://www.seagm.com/REPLACE-WITH-YOUR-AFFILIATE-LINK" target="_blank" rel="noopener">Visit SEAGM →</a>
     </div>
-
-    <div class="tag-card">
-      <div class="tag-head">
-        <span class="name">Codashop</span>
-        <span class="meta">Top-Up</span>
+          <div class="sensitivity-row" data-key="ADS &amp; NON-SCOPE HORIZONTAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">ADS &amp; NON-SCOPE HORIZONTAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="ADS &amp; NON-SCOPE HORIZONTAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="ADS &amp; NON-SCOPE HORIZONTAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
       </div>
-      <div class="hint" style="margin-top:0;">No account login needed for some titles, popular across India/SEA, multiple local payment options.</div>
-      <a class="primary-btn" style="display:block; text-align:center; text-decoration:none;" href="https://www.codashop.com/REPLACE-WITH-YOUR-AFFILIATE-LINK" target="_blank" rel="noopener">Visit Codashop →</a>
     </div>
-
-    <div class="tag-card">
-      <div class="tag-head">
-        <span class="name">GAMSGO</span>
-        <span class="meta">Top-Up</span>
+          <div class="sensitivity-row" data-key="ADS &amp; NON-SCOPE VERTICAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">ADS &amp; NON-SCOPE VERTICAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="ADS &amp; NON-SCOPE VERTICAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="ADS &amp; NON-SCOPE VERTICAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
       </div>
-      <div class="hint" style="margin-top:0;">Often runs CODM-specific bundle deals and seasonal discounts.</div>
-      <a class="primary-btn" style="display:block; text-align:center; text-decoration:none;" href="https://www.gamsgo.com/REPLACE-WITH-YOUR-AFFILIATE-LINK" target="_blank" rel="noopener">Visit GAMSGO →</a>
+    </div>
+          <div class="sensitivity-row" data-key="SCOPE HORIZONTAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">SCOPE HORIZONTAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="SCOPE HORIZONTAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="SCOPE HORIZONTAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="SCOPE VERTICAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">SCOPE VERTICAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="SCOPE VERTICAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="SCOPE VERTICAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="SNIPER ADS HORIZONTAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">SNIPER ADS HORIZONTAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="SNIPER ADS HORIZONTAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="SNIPER ADS HORIZONTAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="SNIPER ADS VERTICAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">SNIPER ADS VERTICAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="SNIPER ADS VERTICAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="SNIPER ADS VERTICAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+        </div>
+      </div>
+
+      <!-- 2. CAMERA SENSITIVITY UNFOLD -->
+      <div class="card rounded-2xl accordion">
+        <button class="accordion-header w-full p-4 sm:p-6 flex items-center justify-between text-left">
+          <h3 class="text-lg font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-video text-sky-400"></i>
+            CAMERA SENSITIVITY UNFOLD
+          </h3>
+          <i class="fa-solid fa-chevron-down accordion-icon transition-transform duration-300 text-sky-400"></i>
+        </button>
+        <div class="accordion-content px-4 sm:px-6 pb-6">
+          <div class="space-y-4 pt-2">
+            <div class="sensitivity-row" data-key="CAMERA_STEERING SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA STEERING SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_STEERING SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_STEERING SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_RED DOT/HOLO SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA RED DOT/HOLO SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_RED DOT/HOLO SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_RED DOT/HOLO SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_ADS SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA ADS SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_ADS SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_ADS SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_TACTICAL SCOPE SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA TACTICAL SCOPE SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_TACTICAL SCOPE SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_TACTICAL SCOPE SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_SNIPER SCOPE SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA SNIPER SCOPE SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_SNIPER SCOPE SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_SNIPER SCOPE SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_3x TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA 3x TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_3x TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_3x TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_4x TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA 4x TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_4x TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_4x TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_6X TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA 6X TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_6X TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_6X TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_8X TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA 8X TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_8X TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_8X TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_VERTICAL TURNING SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA VERTICAL TURNING SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_VERTICAL TURNING SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_VERTICAL TURNING SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_GROUND VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA GROUND VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_GROUND VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_GROUND VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="CAMERA_AIR VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CAMERA AIR VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CAMERA_AIR VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CAMERA_AIR VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. FIRING SENSITIVITY UNFOLD -->
+      <div class="card rounded-2xl accordion">
+        <button class="accordion-header w-full p-4 sm:p-6 flex items-center justify-between text-left">
+          <h3 class="text-lg font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-fire text-red-400"></i>
+            FIRING SENSITIVITY UNFOLD
+          </h3>
+          <i class="fa-solid fa-chevron-down accordion-icon transition-transform duration-300 text-sky-400"></i>
+        </button>
+        <div class="accordion-content px-4 sm:px-6 pb-6">
+          <div class="space-y-4 pt-2">
+            <div class="sensitivity-row" data-key="FIRING_STEERING SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING STEERING SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_STEERING SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_STEERING SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_RED DOT/HOLO SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING RED DOT/HOLO SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_RED DOT/HOLO SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_RED DOT/HOLO SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_ADS SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING ADS SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_ADS SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_ADS SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_TACTICAL SCOPE SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING TACTICAL SCOPE SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_TACTICAL SCOPE SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_TACTICAL SCOPE SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_SNIPER SCOPE SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING SNIPER SCOPE SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_SNIPER SCOPE SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_SNIPER SCOPE SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_3x TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING 3x TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_3x TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_3x TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_4x TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING 4x TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_4x TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_4x TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_6X TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING 6X TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_6X TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_6X TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_8X TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING 8X TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_8X TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_8X TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_VERTICAL TURNING SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING VERTICAL TURNING SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_VERTICAL TURNING SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_VERTICAL TURNING SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_GROUND VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING GROUND VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_GROUND VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_GROUND VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="FIRING_AIR VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">FIRING AIR VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="FIRING_AIR VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="FIRING_AIR VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. GYROSCOPE SENSITIVITY UNFOLD -->
+      <div class="card rounded-2xl accordion">
+        <button class="accordion-header w-full p-4 sm:p-6 flex items-center justify-between text-left">
+          <h3 class="text-lg font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-mobile-screen text-purple-400"></i>
+            GYROSCOPE SENSITIVITY UNFOLD
+          </h3>
+          <i class="fa-solid fa-chevron-down accordion-icon transition-transform duration-300 text-sky-400"></i>
+        </button>
+        <div class="accordion-content px-4 sm:px-6 pb-6">
+          <div class="space-y-4 pt-2">
+            <div class="sensitivity-row" data-key="GYRO_STEERING SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO STEERING SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_STEERING SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_STEERING SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_RED DOT/HOLO SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO RED DOT/HOLO SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_RED DOT/HOLO SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_RED DOT/HOLO SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_ADS SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO ADS SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_ADS SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_ADS SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_TACTICAL SCOPE SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO TACTICAL SCOPE SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_TACTICAL SCOPE SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_TACTICAL SCOPE SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_SNIPER SCOPE SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO SNIPER SCOPE SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_SNIPER SCOPE SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_SNIPER SCOPE SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_3x TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO 3x TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_3x TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_3x TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_4x TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO 4x TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_4x TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_4x TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_6X TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO 6X TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_6X TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_6X TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_8X TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO 8X TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_8X TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_8X TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_VERTICAL TURNING SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO VERTICAL TURNING SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_VERTICAL TURNING SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_VERTICAL TURNING SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_GROUND VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO GROUND VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_GROUND VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_GROUND VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_AIR VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO AIR VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_AIR VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_AIR VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. GYROSCOPE FIRE SENSITIVITY UNFOLD -->
+      <div class="card rounded-2xl accordion">
+        <button class="accordion-header w-full p-4 sm:p-6 flex items-center justify-between text-left">
+          <h3 class="text-lg font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-bullseye text-orange-400"></i>
+            GYROSCOPE FIRE SENSITIVITY UNFOLD
+          </h3>
+          <i class="fa-solid fa-chevron-down accordion-icon transition-transform duration-300 text-sky-400"></i>
+        </button>
+        <div class="accordion-content px-4 sm:px-6 pb-6">
+          <div class="space-y-4 pt-2">
+            <div class="sensitivity-row" data-key="GYRO_FIRE_STEERING SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE STEERING SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_STEERING SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_STEERING SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_RED DOT/HOLO SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE RED DOT/HOLO SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_RED DOT/HOLO SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_RED DOT/HOLO SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_ADS SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE ADS SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_ADS SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_ADS SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_TACTICAL SCOPE SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE TACTICAL SCOPE SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_TACTICAL SCOPE SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_TACTICAL SCOPE SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_SNIPER SCOPE SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE SNIPER SCOPE SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_SNIPER SCOPE SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_SNIPER SCOPE SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_3x TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE 3x TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_3x TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_3x TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_4x TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE 4x TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_4x TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_4x TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_6X TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE 6X TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_6X TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_6X TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_8X TACTICAL SCOPE">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE 8X TACTICAL SCOPE</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_8X TACTICAL SCOPE" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_8X TACTICAL SCOPE" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_VERTICAL TURNING SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE VERTICAL TURNING SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_VERTICAL TURNING SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_VERTICAL TURNING SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_GROUND VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE GROUND VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_GROUND VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_GROUND VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+            <div class="sensitivity-row" data-key="GYRO_FIRE_AIR VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GYRO FIRE AIR VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GYRO_FIRE_AIR VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GYRO_FIRE_AIR VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. VEHICLE Section -->
+      <div class="card rounded-2xl p-4 sm:p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-car text-green-400"></i>
+          VEHICLE
+        </h3>
+        <div class="space-y-4">
+          <div class="sensitivity-row" data-key="GROUND VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">GROUND VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="GROUND VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="GROUND VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="AIR VEHICLES SENSIBILITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">AIR VEHICLES SENSIBILITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="AIR VEHICLES SENSIBILITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="AIR VEHICLES SENSIBILITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="Vehicle">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">Vehicle</label>
+        <input type="range" min="1" max="300" value="100" data-key="Vehicle" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="Vehicle" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="RC-XD">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">RC-XD</label>
+        <input type="range" min="1" max="300" value="100" data-key="RC-XD" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="RC-XD" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="Wheelson">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">Wheelson</label>
+        <input type="range" min="1" max="300" value="100" data-key="Wheelson" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="Wheelson" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+        </div>
+      </div>
+
+      <!-- 7. CONTROLLER SENSITIVITY -->
+      <div class="card rounded-2xl p-4 sm:p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-gamepad text-indigo-400"></i>
+          CONTROLLER SENSITIVITY
+        </h3>
+        <div class="space-y-4">
+          <div class="sensitivity-row" data-key="CONTROLLER_HORIZONTAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CONTROLLER HORIZONTAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CONTROLLER_HORIZONTAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CONTROLLER_HORIZONTAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="CONTROLLER_VERTICAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CONTROLLER VERTICAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CONTROLLER_VERTICAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CONTROLLER_VERTICAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="CONTROLLER_ADS &amp; NON-SCOPE HORIZONTAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CONTROLLER ADS &amp; NON-SCOPE HORIZONTAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CONTROLLER_ADS &amp; NON-SCOPE HORIZONTAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CONTROLLER_ADS &amp; NON-SCOPE HORIZONTAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="CONTROLLER_ADS &amp; NON-SCOPE VERTICAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CONTROLLER ADS &amp; NON-SCOPE VERTICAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CONTROLLER_ADS &amp; NON-SCOPE VERTICAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CONTROLLER_ADS &amp; NON-SCOPE VERTICAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="CONTROLLER_SCOPE HORIZONTAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CONTROLLER SCOPE HORIZONTAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CONTROLLER_SCOPE HORIZONTAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CONTROLLER_SCOPE HORIZONTAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+          <div class="sensitivity-row" data-key="CONTROLLER_SCOPE VERTICAL SENSITIVITY">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">CONTROLLER SCOPE VERTICAL SENSITIVITY</label>
+        <input type="range" min="1" max="300" value="100" data-key="CONTROLLER_SCOPE VERTICAL SENSITIVITY" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="CONTROLLER_SCOPE VERTICAL SENSITIVITY" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    </div>
+        </div>
+      </div>
     </div>
 
-    <div class="hint">Disclosure: I&amp;L GAMES may earn a small commission on purchases made through these links, at no extra cost to you.</div>
-  </section>
+    <!-- BR MODE Content -->
+    <div id="brContent" class="space-y-4 hidden">
+      <div class="card rounded-2xl p-6 text-center">
+        <i class="fa-solid fa-screwdriver-wrench text-4xl text-sky-400 mb-4"></i>
+        <h3 class="text-xl font-semibold mb-2">BR Mode Coming Soon</h3>
+        <p class="text-slate-400 text-sm">Battle Royale specific settings are being optimized. Use MP settings as base for now.</p>
+      </div>
+    </div>
 
-  <!-- ===================== SAVED PANEL ===================== -->
-  <section class="panel" id="panel-saved" role="tabpanel">
-    <h2 class="section-title">Sensitivity Profiles</h2>
-    <div id="savedProfiles"></div>
+    <!-- SEAGM Affiliate Section -->
+    <div class="card rounded-2xl p-6 my-6 seagm-glow border-2 border-sky-500/50">
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex-1 text-center sm:text-left">
+          <h3 class="text-xl font-bold mb-2 flex items-center justify-center sm:justify-start gap-2">
+            <i class="fa-solid fa-gem text-sky-400"></i>
+            Need CODM CP?
+          </h3>
+          <p class="text-slate-300 text-sm">Top up safely with our trusted partner SEAGM. Instant delivery &amp; best prices!</p>
+        </div>
+        <a href="https://www.seagm.com/your-affiliate-link" target="_blank" rel="noopener noreferrer" class="btn-primary px-6 py-3 rounded-xl font-bold flex items-center gap-2 whitespace-nowrap">
+          <i class="fa-solid fa-cart-shopping"></i>
+          Buy CP Now
+        </a>
+      </div>
+    </div>
 
-    <h2 class="section-title" style="margin-top:24px;">Loadout Cards</h2>
-    <div id="savedLoadouts"></div>
+  </main>
 
-    <button class="ghost-btn danger" id="clearAllBtn" style="width:100%; margin-top:18px;">Clear All Saved Data</button>
-  </section>
+  <!-- AdMob Banner Placeholder -->
+  <div class="fixed bottom-0 left-0 right-0 z-30 bg-slate-900 border-t border-sky-500/20">
+    <div class="max-w-7xl mx-auto px-4 py-2">
+      <div class="bg-slate-800 rounded-lg h-14 flex items-center justify-center text-slate-500 text-xs">
+        <!-- AdMob Banner 320x50 / 728x90 -->
+        <span><i class="fa-solid fa-rectangle-ad mr-2"></i>AdMob Banner Placement</span>
+      </div>
+    </div>
+  </div>
 
-</main>
-
-<div class="toast" id="toast"></div>
-
-<footer>Built by I&amp;L GAMES · Data stays on this device</footer>
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed bottom-20 right-4 z-50 space-y-2"></div>
 
 <script>
-(function(){
-  const weaponSuggestionsByClass = {
-    AR: ["AK-47","M4","ASM10","Holger 26 (AR build)","Chopper","BK57"],
-    SMG: ["PDW-57","QQ9","RUS-79U","Cordite","HG 40","Fennec"],
-    LMG: ["Holger 26","UL736","S36","PKM"],
-    Sniper: ["DL Q33","Locus","Outlaw","XPR-50","Arctic .50","NA-45"],
-    Shotgun: ["HS0405","BY15","Echo"],
-    Pistol: ["J358",".50 GS","MW11"]
-  };
-
-  const CLASS_DEFAULTS = {
-    AR:      {optic:"Red Dot Sight",     muzzle:"OWC Laser Tactical",   barrel:"MIP Light Barrel", underbarrel:"YKM Combat Grip",      stock:"YKM Combat Stock", perks:"Hardline, Skulker"},
-    SMG:     {optic:"Holographic Sight", muzzle:"Monolithic Suppressor",barrel:"MIP Light Barrel", underbarrel:"Strafe",               stock:"No Stock",         perks:"Skulker, Alert"},
-    LMG:     {optic:"Tactical Scope",    muzzle:"OWC Light Tactical",   barrel:"MIP Long Barrel",  underbarrel:"OWC Tactical Foregrip",stock:"YKM Combat Stock", perks:"Hardline, Persistence"},
-    Sniper:  {optic:"VLK 3.0x Optic",    muzzle:"OWC Laser Tactical",   barrel:"MIP Long Barrel",  underbarrel:"OWC Tactical Foregrip",stock:"RTC Steady Stock", perks:"Alert, Persistence"},
-    Shotgun: {optic:"Red Dot Sight",     muzzle:"OWC Light Tactical",   barrel:"MIP Light Barrel", underbarrel:"Strafe",               stock:"No Stock",         perks:"Skulker, Hardline"},
-    Pistol:  {optic:"Red Dot Sight",     muzzle:"OWC Light Tactical",   barrel:"MIP Light Barrel", underbarrel:"",                     stock:"",                 perks:"Skulker"}
-  };
-
-  const state = {
-    activeTab: 'sens',
-    playstyle: null,
-    deviceSize: 'medium',
-    gyro: false,
-    profiles: [],
-    loadouts: [],
-    lastResult: null
-  };
-
-  /* ---------------- Tabs ---------------- */
-  document.querySelectorAll('.tab').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected', b===btn ? 'true':'false'));
-      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
-      state.activeTab = btn.dataset.tab;
-    });
-  });
-
-  /* ---------------- Playstyle cards ---------------- */
-  document.querySelectorAll('.style-card').forEach(card=>{
-    card.addEventListener('click', ()=>{
-      document.querySelectorAll('.style-card').forEach(c=>c.setAttribute('aria-pressed', c===card ? 'true':'false'));
-      state.playstyle = card.dataset.style;
-    });
-  });
-
-  /* ---------------- Size segment ---------------- */
-  document.querySelectorAll('#sizeSeg button').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('#sizeSeg button').forEach(b=>b.setAttribute('aria-pressed', b===btn?'true':'false'));
-      state.deviceSize = btn.dataset.size;
-    });
-  });
-
-  /* ---------------- Gyro toggle ---------------- */
-  const gyroToggle = document.getElementById('gyroToggle');
-  gyroToggle.addEventListener('click', ()=>{
-    state.gyro = gyroToggle.getAttribute('aria-pressed') !== 'true';
-    gyroToggle.setAttribute('aria-pressed', state.gyro ? 'true':'false');
-  });
-
-  /* ---------------- Calculation ---------------- */
-  const STYLE_BASE = {
-    rusher:   {camera:110, fire:110, reddot:100, x2:75, x34:55, sniper:35},
-    sniper:   {camera:85,  fire:90,  reddot:70,  x2:60, x34:45, sniper:32},
-    balanced: {camera:95,  fire:100, reddot:85,  x2:65, x34:50, sniper:35},
-    cqb:      {camera:120, fire:115, reddot:105, x2:80, x34:60, sniper:30}
-  };
-  const SIZE_MOD = {small:1.08, medium:1.0, large:0.92};
-  const STAT_MAX = {camera:160, fire:160, reddot:140, x2:110, x34:90, sniper:70, gyro:300};
-  const STAT_LABEL = {camera:'Camera / Free Look', fire:'Fire Button (ADS)', reddot:'Red Dot / Holo', x2:'2x Scope', x34:'3x–4x Scope', sniper:'Sniper Scope', gyro:'Gyroscope'};
-  const AGGRO_BASE = {rusher:88, cqb:82, balanced:50, sniper:18};
-
-  function calcProfile(playstyle, size, gyro){
-    const base = STYLE_BASE[playstyle];
-    const mod = SIZE_MOD[size];
-    const stats = {};
-    Object.keys(base).forEach(k=>{ stats[k] = Math.min(200, Math.max(1, Math.round(base[k]*mod))); });
-    if (gyro){
-      stats.gyro = Math.min(300, Math.round(stats.camera*2.2));
-      stats.camera = Math.round(stats.camera*0.9);
-      stats.fire = Math.round(stats.fire*0.9);
-    }
-    return stats;
-  }
-  function calcAggro(playstyle, size, gyro){
-    let v = AGGRO_BASE[playstyle];
-    if (size==='small') v += 5;
-    if (size==='large') v -= 5;
-    if (gyro) v += 4;
-    return Math.min(100, Math.max(0, Math.round(v)));
+  // Initialize all sensitivity rows
+  function createSensitivityRow(label, key) {
+    return `
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+        <label class="text-sm text-slate-300 font-medium text-responsive">${label}</label>
+        <input type="range" min="1" max="300" value="100" data-key="${key}" class="sensitivity-slider w-full">
+        <input type="number" min="1" max="300" value="100" data-key="${key}" class="sensitivity-input px-3 py-2 rounded-lg text-sm text-center w-full">
+      </div>
+    `;
   }
 
-  const STYLE_NAMES = {rusher:'Rusher', sniper:'Sniper', balanced:'Balanced', cqb:'Close-Quarters'};
-  const SIZE_NAMES = {small:'Small screen', medium:'Medium screen', large:'Large / Tablet'};
-
-  document.getElementById('generateBtn').addEventListener('click', ()=>{
-    if (!state.playstyle){
-      showToast('Pick a playstyle card first.');
-      return;
-    }
-    const stats = calcProfile(state.playstyle, state.deviceSize, state.gyro);
-    const aggro = calcAggro(state.playstyle, state.deviceSize, state.gyro);
-    state.lastResult = {stats, aggro, playstyle: state.playstyle, size: state.deviceSize, gyro: state.gyro};
-    renderDial(aggro);
-    renderResult(stats, aggro);
+  // Populate all rows
+  document.querySelectorAll('.sensitivity-row').forEach(row => {
+    const key = row.getAttribute('data-key');
+    const label = key.replace(/_/g, ' ').replace('CAMERA_', '').replace('FIRING_', '').replace('GYRO_FIRE_', '').replace('GYRO_', '').replace('CONTROLLER_', '');
+    row.innerHTML = createSensitivityRow(label, key);
   });
 
-  function renderDial(aggro){
-    const wrap = document.getElementById('dialWrap');
-    wrap.style.display = 'flex';
-    const circumference = 2*Math.PI*58;
-    const arc = document.getElementById('dialArc');
-    arc.setAttribute('stroke-dasharray', circumference);
-    arc.setAttribute('stroke-dashoffset', circumference - (aggro/100)*circumference);
-    document.getElementById('dialNum').textContent = aggro;
-    document.getElementById('dialSub').textContent =
-      aggro >= 75 ? 'Hyper-aggressive setup' :
-      aggro >= 45 ? 'Balanced setup' : 'Precision / hold setup';
-  }
-
-  function renderResult(stats, aggro){
-    const card = document.getElementById('resultCard');
-    card.style.display = 'block';
-    document.getElementById('resultTitle').textContent = STYLE_NAMES[state.playstyle] + ' Profile';
-    document.getElementById('resultMeta').textContent = SIZE_NAMES[state.deviceSize] + (state.gyro ? ' · Gyro On' : ' · Gyro Off');
-    const rows = document.getElementById('statRows');
-    rows.innerHTML = '';
-    Object.keys(stats).forEach(k=>{
-      const pct = Math.min(100, (stats[k]/STAT_MAX[k])*100);
-      const row = document.createElement('div');
-      row.className = 'stat-row';
-      row.innerHTML = '<span class="stat-label">'+STAT_LABEL[k]+'</span>'+
-        '<span class="bar-track"><span class="bar-fill" style="width:'+pct+'%"></span></span>'+
-        '<span class="stat-val mono">'+stats[k]+'</span>';
-      rows.appendChild(row);
-    });
-    card.scrollIntoView({behavior: prefersReduced() ? 'auto':'smooth', block:'center'});
-  }
-
-  function prefersReduced(){
-    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  }
-
-  /* ---------------- Save profile ---------------- */
-  document.getElementById('saveProfileBtn').addEventListener('click', async ()=>{
-    if (!state.lastResult){ showToast('Generate a profile first.'); return; }
-    const name = STYLE_NAMES[state.lastResult.playstyle] + ' · ' + SIZE_NAMES[state.lastResult.size];
-    const entry = Object.assign({id: 'p'+Date.now(), name, createdAt: new Date().toISOString()}, state.lastResult);
-    state.profiles.unshift(entry);
-    const ok = await persist('sensitivity_profiles', state.profiles);
-    if (ok){ showToast('Profile saved.'); renderSavedProfiles(); }
-    else { state.profiles.shift(); showToast('Could not save — try again.'); }
-  });
-
-  document.getElementById('copyProfileBtn').addEventListener('click', ()=>{
-    if (!state.lastResult) return;
-    copyText(profileToText(state.lastResult, STYLE_NAMES[state.lastResult.playstyle]+' Profile'));
-  });
-
-  function profileToText(result, title){
-    const lines = [
-      'CODM SENSITIVITY — ' + title,
-      'Playstyle: ' + STYLE_NAMES[result.playstyle] + ' | Screen: ' + SIZE_NAMES[result.size] + ' | Gyro: ' + (result.gyro?'On':'Off'),
-    ];
-    Object.keys(result.stats).forEach(k=> lines.push(STAT_LABEL[k] + ': ' + result.stats[k]));
-    lines.push('— via I&L GAMES Loadout Lab');
-    return lines.join('\n');
-  }
-
-  /* ---------------- Loadout panel ---------------- */
-  const weaponClassSel = document.getElementById('weaponClass');
-  function refreshWeaponSuggestions(){
-    const list = document.getElementById('weaponSuggestions');
-    list.innerHTML = '';
-    (weaponSuggestionsByClass[weaponClassSel.value]||[]).forEach(w=>{
-      const opt = document.createElement('option');
-      opt.value = w;
-      list.appendChild(opt);
-    });
-  }
-  weaponClassSel.addEventListener('change', refreshWeaponSuggestions);
-  refreshWeaponSuggestions();
-
-  document.getElementById('autofillBtn').addEventListener('click', ()=>{
-    const d = CLASS_DEFAULTS[weaponClassSel.value];
-    if (!d) return;
-    document.getElementById('optic').value = d.optic;
-    document.getElementById('muzzle').value = d.muzzle;
-    document.getElementById('barrel').value = d.barrel;
-    document.getElementById('underbarrel').value = d.underbarrel;
-    document.getElementById('stock').value = d.stock;
-    document.getElementById('perks').value = d.perks;
-    showToast('Suggested attachments filled — edit anything below.');
-  });
-
-  document.getElementById('saveLoadoutBtn').addEventListener('click', async ()=>{
-    const name = val('loadoutName').trim();
-    const weaponName = val('weaponName').trim();
-    if (!name || !weaponName){ showToast('Add at least a weapon and a loadout name.'); return; }
-    const entry = {
-      id: 'l'+Date.now(),
-      name,
-      weaponClass: weaponClassSel.value,
-      weaponName,
-      optic: val('optic'), muzzle: val('muzzle'), barrel: val('barrel'),
-      underbarrel: val('underbarrel'), stock: val('stock'),
-      perks: val('perks'), notes: val('loadoutNotes'),
-      createdAt: new Date().toISOString()
-    };
-    state.loadouts.unshift(entry);
-    const ok = await persist('loadouts', state.loadouts);
-    if (ok){
-      showToast('Loadout saved.');
-      renderSavedLoadouts();
-      ['loadoutName','weaponName','optic','muzzle','barrel','underbarrel','stock','perks','loadoutNotes'].forEach(id=>document.getElementById(id).value='');
-    } else {
-      state.loadouts.shift();
-      showToast('Could not save — try again.');
-    }
-  });
-  function val(id){ return document.getElementById(id).value; }
-
-  function loadoutToText(l){
-    return [
-      'CODM LOADOUT — ' + l.name,
-      'Class: ' + l.weaponClass + ' | Weapon: ' + l.weaponName,
-      'Optic: ' + (l.optic||'—') + ' | Muzzle: ' + (l.muzzle||'—'),
-      'Barrel: ' + (l.barrel||'—') + ' | Underbarrel: ' + (l.underbarrel||'—') + ' | Stock: ' + (l.stock||'—'),
-      'Perks: ' + (l.perks||'—'),
-      l.notes ? ('Notes: ' + l.notes) : null,
-      '— via I&L GAMES Loadout Lab'
-    ].filter(Boolean).join('\n');
-  }
-
-  /* ---------------- Saved panel rendering ---------------- */
-  function renderSavedProfiles(){
-    const wrap = document.getElementById('savedProfiles');
-    if (!state.profiles.length){
-      wrap.innerHTML = '<div class="empty-state">No profiles locked in yet. Generate one in the Sensitivity tab and hit Save.</div>';
-      return;
-    }
-    wrap.innerHTML = '';
-    state.profiles.forEach(p=>{
-      const div = document.createElement('div');
-      div.className = 'save-card';
-      const statLine = Object.keys(p.stats).map(k=> esc(STAT_LABEL[k])+': '+p.stats[k]).join(' · ');
-      div.innerHTML =
-        '<div class="save-head"><span class="save-name">'+esc(p.name)+'</span></div>'+
-        '<div class="save-sub">'+ (p.gyro?'Gyro On':'Gyro Off') +'</div>'+
-        '<div class="save-line">'+statLine+'</div>'+
-        '<div class="save-actions">'+
-          '<button class="ghost-btn copy-p">Copy</button>'+
-          '<button class="ghost-btn danger del-p">Delete</button>'+
-        '</div>';
-      div.querySelector('.copy-p').addEventListener('click', ()=> copyText(profileToText(p, p.name)));
-      div.querySelector('.del-p').addEventListener('click', async ()=>{
-        const idx = state.profiles.indexOf(p);
-        state.profiles.splice(idx,1);
-        const ok = await persist('sensitivity_profiles', state.profiles);
-        if (ok) { renderSavedProfiles(); showToast('Deleted.'); }
-        else { state.profiles.splice(idx,0,p); showToast('Could not delete — try again.'); }
+  // Sync range and number inputs
+  document.addEventListener('input', (e) => {
+    if (e.target.classList.contains('sensitivity-slider') || e.target.classList.contains('sensitivity-input')) {
+      const key = e.target.getAttribute('data-key');
+      const value = e.target.value;
+      document.querySelectorAll(`[data-key="${key}"]`).forEach(input => {
+        input.value = value;
       });
-      wrap.appendChild(div);
-    });
-  }
-
-  function renderSavedLoadouts(){
-    const wrap = document.getElementById('savedLoadouts');
-    if (!state.loadouts.length){
-      wrap.innerHTML = '<div class="empty-state">No loadout cards yet. Build one in the Loadout tab.</div>';
-      return;
     }
-    wrap.innerHTML = '';
-    state.loadouts.forEach(l=>{
-      const div = document.createElement('div');
-      div.className = 'save-card';
-      div.innerHTML =
-        '<div class="save-head"><span class="save-name">'+esc(l.name)+'</span><span class="save-sub">'+esc(l.weaponClass)+'</span></div>'+
-        '<div class="save-sub">'+esc(l.weaponName)+'</div>'+
-        '<div class="save-line"><b>Optic</b> '+esc(l.optic||'—')+' · <b>Muzzle</b> '+esc(l.muzzle||'—')+'<br><b>Barrel</b> '+esc(l.barrel||'—')+' · <b>Under</b> '+esc(l.underbarrel||'—')+' · <b>Stock</b> '+esc(l.stock||'—')+'<br><b>Perks</b> '+esc(l.perks||'—')+(l.notes? ('<br><b>Notes</b> '+esc(l.notes)) : '')+'</div>'+
-        '<div class="save-actions">'+
-          '<button class="ghost-btn copy-l">Copy</button>'+
-          '<button class="ghost-btn danger del-l">Delete</button>'+
-        '</div>';
-      div.querySelector('.copy-l').addEventListener('click', ()=> copyText(loadoutToText(l)));
-      div.querySelector('.del-l').addEventListener('click', async ()=>{
-        const idx = state.loadouts.indexOf(l);
-        state.loadouts.splice(idx,1);
-        const ok = await persist('loadouts', state.loadouts);
-        if (ok) { renderSavedLoadouts(); showToast('Deleted.'); }
-        else { state.loadouts.splice(idx,0,l); showToast('Could not delete — try again.'); }
-      });
-      wrap.appendChild(div);
-    });
-  }
-
-  document.getElementById('clearAllBtn').addEventListener('click', async ()=>{
-    state.profiles = [];
-    state.loadouts = [];
-    await persist('sensitivity_profiles', []);
-    await persist('loadouts', []);
-    renderSavedProfiles();
-    renderSavedLoadouts();
-    showToast('All saved data cleared.');
   });
 
-  /* ---------------- Storage helpers ---------------- */
-  async function persist(key, arr){
-    try{
-      localStorage.setItem('codmLab_'+key, JSON.stringify(arr));
-      return true;
-    }catch(e){ console.error('storage set failed', e); return false; }
-  }
-  async function loadKey(key){
-    try{
-      const raw = localStorage.getItem('codmLab_'+key);
-      if (!raw) return [];
-      return JSON.parse(raw);
-    }catch(e){ return []; }
-  }
-  async function init(){
-    state.profiles = await loadKey('sensitivity_profiles');
-    state.loadouts = await loadKey('loadouts');
-    renderSavedProfiles();
-    renderSavedLoadouts();
-  }
-  init();
+  // Accordion functionality
+  document.querySelectorAll('.accordion-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const accordion = header.parentElement;
+      accordion.classList.toggle('accordion-active');
+    });
+  });
 
-  /* ---------------- Utilities ---------------- */
-  function esc(str){
-    return String(str==null?'':str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  }
-  function copyText(text){
-    if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard.')).catch(()=>fallbackCopy(text));
-    } else {
-      fallbackCopy(text);
+  // Tab switching
+  const mpTab = document.getElementById('mpTab');
+  const brTab = document.getElementById('brTab');
+  const mpContent = document.getElementById('mpContent');
+  const brContent = document.getElementById('brContent');
+
+  mpTab.addEventListener('click', () => {
+    mpTab.classList.add('tab-active');
+    brTab.classList.remove('tab-active');
+    mpContent.classList.remove('hidden');
+    brContent.classList.add('hidden');
+  });
+
+  brTab.addEventListener('click', () => {
+    brTab.classList.add('tab-active');
+    mpTab.classList.remove('tab-active');
+    brContent.classList.remove('hidden');
+    mpContent.classList.add('hidden');
+  });
+
+  // Weapon presets
+  const weaponData = {
+    AR: {
+      'M13': { 'HORIZONTAL SENSITIVITY': 140, 'VERTICAL SENSITIVITY': 135, 'FIRING_RED DOT/HOLO SENSITIVITY': 90, 'GYRO_RED DOT/HOLO SENSITIVITY': 110 },
+      'AK117': { 'HORIZONTAL SENSITIVITY': 150, 'VERTICAL SENSITIVITY': 145, 'FIRING_RED DOT/HOLO SENSITIVITY': 95, 'GYRO_RED DOT/HOLO SENSITIVITY': 115 },
+      'Kilo 141': { 'HORIZONTAL SENSITIVITY': 135, 'VERTICAL SENSITIVITY': 130, 'FIRING_RED DOT/HOLO SENSITIVITY': 88, 'GYRO_RED DOT/HOLO SENSITIVITY': 105 }
+    },
+    SMG: {
+      'CBR4': { 'HORIZONTAL SENSITIVITY': 180, 'VERTICAL SENSITIVITY': 175, 'FIRING_RED DOT/HOLO SENSITIVITY': 120, 'GYRO_RED DOT/HOLO SENSITIVITY': 140 },
+      'Fennec': { 'HORIZONTAL SENSITIVITY': 190, 'VERTICAL SENSITIVITY': 185, 'FIRING_RED DOT/HOLO SENSITIVITY': 130, 'GYRO_RED DOT/HOLO SENSITIVITY': 150 },
+      'QQ9': { 'HORIZONTAL SENSITIVITY': 175, 'VERTICAL SENSITIVITY': 170, 'FIRING_RED DOT/HOLO SENSITIVITY': 115, 'GYRO_RED DOT/HOLO SENSITIVITY': 135 }
+    },
+    Sniper: {
+      'DLQ33': { 'SNIPER ADS HORIZONTAL SENSITIVITY': 45, 'SNIPER ADS VERTICAL SENSITIVITY': 45, 'CAMERA_SNIPER SCOPE SENSITIVITY': 35, 'GYRO_SNIPER SCOPE SENSITIVITY': 65 },
+      'Locus': { 'SNIPER ADS HORIZONTAL SENSITIVITY': 48, 'SNIPER ADS VERTICAL SENSITIVITY': 48, 'CAMERA_SNIPER SCOPE SENSITIVITY': 38, 'GYRO_SNIPER SCOPE SENSITIVITY': 68 },
+      'HDR': { 'SNIPER ADS HORIZONTAL SENSITIVITY': 42, 'SNIPER ADS VERTICAL SENSITIVITY': 42, 'CAMERA_SNIPER SCOPE SENSITIVITY': 32, 'GYRO_SNIPER SCOPE SENSITIVITY': 62 }
+    },
+    LMG: {
+      'Holger 26': { 'HORIZONTAL SENSITIVITY': 120, 'VERTICAL SENSITIVITY': 115, 'FIRING_RED DOT/HOLO SENSITIVITY': 75, 'GYRO_RED DOT/HOLO SENSITIVITY': 90 },
+      'RPD': { 'HORIZONTAL SENSITIVITY': 115, 'VERTICAL SENSITIVITY': 110, 'FIRING_RED DOT/HOLO SENSITIVITY': 70, 'GYRO_RED DOT/HOLO SENSITIVITY': 85 }
+    },
+    Shotgun: {
+      'KRM-262': { 'HORIZONTAL SENSITIVITY': 200, 'VERTICAL SENSITIVITY': 195, 'FIRING_RED DOT/HOLO SENSITIVITY': 140, 'GYRO_RED DOT/HOLO SENSITIVITY': 160 },
+      'BY15': { 'HORIZONTAL SENSITIVITY': 195, 'VERTICAL SENSITIVITY': 190, 'FIRING_RED DOT/HOLO SENSITIVITY': 135, 'GYRO_RED DOT/HOLO SENSITIVITY': 155 }
+    },
+    Marksman: {
+      'SKS': { 'HORIZONTAL SENSITIVITY': 125, 'VERTICAL SENSITIVITY': 120, 'FIRING_4x TACTICAL SCOPE': 55, 'GYRO_4x TACTICAL SCOPE': 75 },
+      'SP-R 208': { 'HORIZONTAL SENSITIVITY': 130, 'VERTICAL SENSITIVITY': 125, 'FIRING_6X TACTICAL SCOPE': 50, 'GYRO_6X TACTICAL SCOPE': 70 }
     }
+  };
+
+  const weaponClass = document.getElementById('weaponClass');
+  const weaponName = document.getElementById('weaponName');
+  const autoFillBtn = document.getElementById('autoFillBtn');
+
+  weaponClass.addEventListener('change', () => {
+    const classValue = weaponClass.value;
+    weaponName.innerHTML = '<option value="">Select Weapon</option>';
+    if (classValue && weaponData[classValue]) {
+      Object.keys(weaponData[classValue]).forEach(weapon => {
+        weaponName.innerHTML += `<option value="${weapon}">${weapon}</option>`;
+      });
+    }
+  });
+
+  autoFillBtn.addEventListener('click', () => {
+    const classValue = weaponClass.value;
+    const nameValue = weaponName.value;
+    if (!classValue || !nameValue) {
+      showToast('Please select weapon class and name', 'error');
+      return;
+    }
+    const preset = weaponData[classValue][nameValue];
+    Object.keys(preset).forEach(key => {
+      const value = preset[key];
+      document.querySelectorAll(`[data-key="${key}"]`).forEach(input => {
+        input.value = value;
+      });
+    });
+    showToast(`${nameValue} preset applied!`, 'success');
+  });
+
+  // Copy all functionality
+  document.getElementById('copyAllBtn').addEventListener('click', () => {
+    let output = '=== I&L GAMES CODM SENSITIVITY ===\n\nMP MODE:\n\n';
+    
+    document.querySelectorAll('#mpContent .sensitivity-row').forEach(row => {
+      const key = row.getAttribute('data-key');
+      const value = row.querySelector('.sensitivity-input').value;
+      const label = key.replace(/_/g, ' ').replace('CAMERA_', 'CAMERA: ').replace('FIRING_', 'FIRING: ').replace('GYRO_FIRE_', 'GYRO FIRE: ').replace('GYRO_', 'GYRO: ').replace('CONTROLLER_', 'CONTROLLER: ');
+      output += `${label}: ${value}\n`;
+    });
+    
+    navigator.clipboard.writeText(output).then(() => {
+      showToast('All settings copied to clipboard!', 'success');
+    }).catch(() => {
+      showToast('Failed to copy settings', 'error');
+    });
+  });
+
+  // Toast notification system
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+    const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+    
+    toast.className = `toast ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 min-w-[200px] max-w-[90vw]`;
+    toast.innerHTML = `<i class="fa-solid ${icon}"></i><span class="text-sm">${message}</span>`;
+    
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
   }
-  function fallbackCopy(text){
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position='fixed'; ta.style.opacity='0';
-    document.body.appendChild(ta);
-    ta.select();
-    try{ document.execCommand('copy'); showToast('Copied to clipboard.'); }
-    catch(e){ showToast('Copy failed — select and copy manually.'); }
-    document.body.removeChild(ta);
-  }
-  let toastTimer;
-  function showToast(msg){
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=> t.classList.remove('show'), 2200);
-  }
-})();
+
+  // Load saved settings from localStorage
+  window.addEventListener('load', () => {
+    const saved = localStorage.getItem('codmSensitivity');
+    if (saved) {
+      const settings = JSON.parse(saved);
+      Object.keys(settings).forEach(key => {
+        document.querySelectorAll(`[data-key="${key}"]`).forEach(input => {
+          input.value = settings[key];
+        });
+      });
+    }
+  });
+
+  // Auto-save to localStorage
+  document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('sensitivity-input') || e.target.classList.contains('sensitivity-slider')) {
+      const settings = {};
+      document.querySelectorAll('.sensitivity-input').forEach(input => {
+        const key = input.getAttribute('data-key');
+        settings[key] = input.value;
+      });
+      localStorage.setItem('codmSensitivity', JSON.stringify(settings));
+    }
+  });
 </script>
-</body>
-</html>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+
+</body></html>
