@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0A0C0F">
-  <link rel="manifest" href="manifest.json">
 <title>CODM Loadout Lab — I&L GAMES</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -235,6 +234,7 @@
 <nav class="tabs" role="tablist" aria-label="Sections">
   <button class="tab" role="tab" data-tab="sens" aria-selected="true">Sensitivity</button>
   <button class="tab" role="tab" data-tab="load" aria-selected="false">Loadout</button>
+  <button class="tab" role="tab" data-tab="topup" aria-selected="false">Top-Up</button>
   <button class="tab" role="tab" data-tab="saved" aria-selected="false">Saved</button>
 </nav>
 
@@ -332,6 +332,9 @@
       </div>
     </div>
 
+    <button class="ghost-btn accent" id="autofillBtn" style="width:100%; margin-bottom:14px;">⚡ Auto-fill Suggested Attachments</button>
+    <div class="hint" style="margin-top:-8px; margin-bottom:14px;">Fills a starting-point loadout for this weapon class — edit any field below to match your own gunsmith.</div>
+
     <div class="field">
       <label for="optic">Optic</label>
       <input id="optic" list="opticList" placeholder="e.g. Red Dot Sight">
@@ -379,6 +382,41 @@
     <div class="hint">Attachment names are examples — gunsmith options shift every season, so type whatever's current and keep building real cards here.</div>
   </section>
 
+  <!-- ===================== TOP-UP PANEL ===================== -->
+  <section class="panel" id="panel-topup" role="tabpanel">
+    <h2 class="section-title">CP / UC Top-Up</h2>
+    <div class="hint" style="margin-top:0; margin-bottom:16px;">Third-party resellers often price COD Points lower than the in-game store thanks to regional pricing. Compare before you buy.</div>
+
+    <div class="tag-card">
+      <div class="tag-head">
+        <span class="name">SEAGM</span>
+        <span class="meta">Top-Up</span>
+      </div>
+      <div class="hint" style="margin-top:0;">Wide game catalog, instant delivery on most CP packages, frequent discount codes.</div>
+      <a class="primary-btn" style="display:block; text-align:center; text-decoration:none;" href="https://www.seagm.com/REPLACE-WITH-YOUR-AFFILIATE-LINK" target="_blank" rel="noopener">Visit SEAGM →</a>
+    </div>
+
+    <div class="tag-card">
+      <div class="tag-head">
+        <span class="name">Codashop</span>
+        <span class="meta">Top-Up</span>
+      </div>
+      <div class="hint" style="margin-top:0;">No account login needed for some titles, popular across India/SEA, multiple local payment options.</div>
+      <a class="primary-btn" style="display:block; text-align:center; text-decoration:none;" href="https://www.codashop.com/REPLACE-WITH-YOUR-AFFILIATE-LINK" target="_blank" rel="noopener">Visit Codashop →</a>
+    </div>
+
+    <div class="tag-card">
+      <div class="tag-head">
+        <span class="name">GAMSGO</span>
+        <span class="meta">Top-Up</span>
+      </div>
+      <div class="hint" style="margin-top:0;">Often runs CODM-specific bundle deals and seasonal discounts.</div>
+      <a class="primary-btn" style="display:block; text-align:center; text-decoration:none;" href="https://www.gamsgo.com/REPLACE-WITH-YOUR-AFFILIATE-LINK" target="_blank" rel="noopener">Visit GAMSGO →</a>
+    </div>
+
+    <div class="hint">Disclosure: I&amp;L GAMES may earn a small commission on purchases made through these links, at no extra cost to you.</div>
+  </section>
+
   <!-- ===================== SAVED PANEL ===================== -->
   <section class="panel" id="panel-saved" role="tabpanel">
     <h2 class="section-title">Sensitivity Profiles</h2>
@@ -405,6 +443,15 @@
     Sniper: ["DL Q33","Locus","Outlaw","XPR-50","Arctic .50","NA-45"],
     Shotgun: ["HS0405","BY15","Echo"],
     Pistol: ["J358",".50 GS","MW11"]
+  };
+
+  const CLASS_DEFAULTS = {
+    AR:      {optic:"Red Dot Sight",     muzzle:"OWC Laser Tactical",   barrel:"MIP Light Barrel", underbarrel:"YKM Combat Grip",      stock:"YKM Combat Stock", perks:"Hardline, Skulker"},
+    SMG:     {optic:"Holographic Sight", muzzle:"Monolithic Suppressor",barrel:"MIP Light Barrel", underbarrel:"Strafe",               stock:"No Stock",         perks:"Skulker, Alert"},
+    LMG:     {optic:"Tactical Scope",    muzzle:"OWC Light Tactical",   barrel:"MIP Long Barrel",  underbarrel:"OWC Tactical Foregrip",stock:"YKM Combat Stock", perks:"Hardline, Persistence"},
+    Sniper:  {optic:"VLK 3.0x Optic",    muzzle:"OWC Laser Tactical",   barrel:"MIP Long Barrel",  underbarrel:"OWC Tactical Foregrip",stock:"RTC Steady Stock", perks:"Alert, Persistence"},
+    Shotgun: {optic:"Red Dot Sight",     muzzle:"OWC Light Tactical",   barrel:"MIP Light Barrel", underbarrel:"Strafe",               stock:"No Stock",         perks:"Skulker, Hardline"},
+    Pistol:  {optic:"Red Dot Sight",     muzzle:"OWC Light Tactical",   barrel:"MIP Light Barrel", underbarrel:"",                     stock:"",                 perks:"Skulker"}
   };
 
   const state = {
@@ -573,6 +620,18 @@
   weaponClassSel.addEventListener('change', refreshWeaponSuggestions);
   refreshWeaponSuggestions();
 
+  document.getElementById('autofillBtn').addEventListener('click', ()=>{
+    const d = CLASS_DEFAULTS[weaponClassSel.value];
+    if (!d) return;
+    document.getElementById('optic').value = d.optic;
+    document.getElementById('muzzle').value = d.muzzle;
+    document.getElementById('barrel').value = d.barrel;
+    document.getElementById('underbarrel').value = d.underbarrel;
+    document.getElementById('stock').value = d.stock;
+    document.getElementById('perks').value = d.perks;
+    showToast('Suggested attachments filled — edit anything below.');
+  });
+
   document.getElementById('saveLoadoutBtn').addEventListener('click', async ()=>{
     const name = val('loadoutName').trim();
     const weaponName = val('weaponName').trim();
@@ -687,15 +746,15 @@
   /* ---------------- Storage helpers ---------------- */
   async function persist(key, arr){
     try{
-      const res = await window.storage.set(key, JSON.stringify(arr), false);
-      return !!res;
+      localStorage.setItem('codmLab_'+key, JSON.stringify(arr));
+      return true;
     }catch(e){ console.error('storage set failed', e); return false; }
   }
   async function loadKey(key){
     try{
-      const res = await window.storage.get(key, false);
-      if (!res || !res.value) return [];
-      return JSON.parse(res.value);
+      const raw = localStorage.getItem('codmLab_'+key);
+      if (!raw) return [];
+      return JSON.parse(raw);
     }catch(e){ return []; }
   }
   async function init(){
